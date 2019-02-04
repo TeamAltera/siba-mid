@@ -16,10 +16,23 @@ module.exports = {
 
     client.getMappings({ local: true }, (err, results) => {
       let externalPort = 12345;
-      let internalPort = 3000;
+      let internalPort = 3001;
 
       console.log(ip.address())
+      
 
+      client.portUnmapping({public: 12345});
+
+      client.portMapping({
+        public: externalPort, //external
+        private: internalPort, //internal
+        ttl: 10
+      }, (err) => {
+        // Will be called once finished
+        console.log('finished')
+      });
+
+      /*
       //upnp가 적용된 포트가 있는지 식별
       if ((results => results.filter(element => element.public.port === externalPort)) === null) {
         console.log('empty,... new forwarding')
@@ -35,7 +48,7 @@ module.exports = {
       }
       else
         console.log('forwarding already done')
-      client.externalIp((err, ip) => {
+      /*client.externalIp((err, ip) => {
         console.log(ip);
         axios.post('http://localhost:8081/test',{
           ip: ip,
@@ -48,7 +61,7 @@ module.exports = {
           .catch(error => {
             console.log(error);
           });
-      });
+      });*/
     });
   }
 }
