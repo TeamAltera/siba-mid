@@ -9,9 +9,29 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+var cors = require('cors');
+
+//cors 설정
+app.use(cors({
+  'allowedHeaders': ['sessionId', 'Content-Type', 'Authorization'],
+  'exposedHeaders': ['sessionId'],
+  'origin': '*',
+  'methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'preflightContinue': false
+}));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+//passport와 session 설정
+/*app.use(passport.initialize());
+app.use(passport.session());
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));*/
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -37,5 +57,7 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
 
 module.exports = app;
