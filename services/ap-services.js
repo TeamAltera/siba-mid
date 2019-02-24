@@ -2,6 +2,7 @@ var hostapd = require('wireless-tools/hostapd');
 var udhcpd = require('wireless-tools/udhcpd');
 var ifconfig = require('wireless-tools/ifconfig');
 var async = require('async');
+var ledServices = require('../services/led-services');
 
 var udhcpd_options = {
     interface: 'wlan0',
@@ -66,12 +67,14 @@ module.exports = {
 
     disable: () => {
         async.series(disable_tasks, (err, results)=>{
+            ledServices.process();
             console.log(results);
         });
     },
 
     enable: () => {
         async.series(enable_tasks, (err, results)=>{
+            ledServices.enable();
             console.log(results);
         });
     },
