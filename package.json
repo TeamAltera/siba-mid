@@ -6,22 +6,22 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "async": "^2.6.2",
+    "async-lock": "^1.1.4",
     "address": "^1.0.3",
     "axios": "^0.18.0",
-    "bcrypt-nodejs": "0.0.3",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
-    "dhcp": "^0.2.18",
     "ejs": "~2.5.7",
     "express": "~4.16.0",
-    "express-session": "^1.15.6",
-    "http-errors": "^1.6.3",
+    "http-errors": "~1.6.2",
     "ip": "^1.1.5",
-    "morgan": "~1.9.0",
     "nat-upnp": "^1.1.1",
-    "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
+    "morgan": "~1.9.0",
+    "onoff": "^3.2.8",
+    "wifi-control": "^2.0.1",
+    "wireless-tools": "^0.19.0",
     "public-ip": "^3.0.0"
   }
 }

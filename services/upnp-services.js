@@ -16,7 +16,7 @@ module.exports = {
 
     client.getMappings({ local: true }, (err, results) => {
       let externalPort = 12345;
-      let internalPort = 3001;
+      let internalPort = 3000;
 
       console.log(ip.address())
       
