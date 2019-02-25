@@ -1,4 +1,4 @@
-FROM node:10
+FROM arm32v7/node:10
 MAINTAINER sencom1028@gmail.com
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
@@ -10,7 +10,10 @@ WORKDIR /home/node/app
 COPY package*.json ./
 
 #switch user to node
-USER node
+USER root
+
+#install udhcpd, hostapd, dnsmasq
+RUN apt-get update && apt-get install -y hostapd dnsmasq udhcpd net-tools
 
 RUN npm install
 

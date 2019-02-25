@@ -67,14 +67,14 @@ module.exports = {
 
     disable: () => {
         async.series(disable_tasks, (err, results)=>{
-            ledServices.process();
+            err ? ledServices.error() : ledServices.process();
             console.log(results);
         });
     },
 
     enable: () => {
         async.series(enable_tasks, (err, results)=>{
-            ledServices.enable();
+            err ? ledServices.error() : ledServices.enable();
             console.log(results);
         });
     },
