@@ -14,7 +14,7 @@ var apServices = require('../services/ap-services');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3001');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
@@ -92,6 +92,6 @@ function onListening() {
 
   //UPnP 수행
   //upnpService.portFoward();
-  apServices.disable(); //기존의 설정값 초기화
-  setTimeout(()=>apServices.enable(),2000);//ap모드 기동
+  apServices.disable();
+  apServices.enable();
 }

@@ -22,7 +22,14 @@ var hostapd_options = {
     interface: 'wlan0',
     ssid: 'IoT-Hub', //ssid
     wpa: 2,
-    wpa_passphrase: 'raspberry' //비밀번호
+    wpa_passphrase: 'raspberry', //비밀번호
+    //ieee80211n: 1, //enable 802.11n
+    //wmm_enabled: 1, //enable wmm
+    //macaddr_acl: 0, //accept all MAC address
+    //auth_algs: 1, //Use WPA authentication
+    //ignore_broadcast_ssid=0, //require clients to know the network name  
+    //wpa_key_mgmt: 'WPA-PSK', //Use a pre-shared key
+    //rsn_pairwise: 'CCMP' //Use AES, instead of TKIP
 };
 
 var ifconfig_options = {
@@ -33,12 +40,17 @@ var ifconfig_options = {
 }
 
 var disable_tasks = [
-    (callback)=>{
+    /*(callback)=>{
+        ifconfig.down(ifconfig_options.interface,(err)=>{
+            callback(null, err);
+        });
+    },*/
+    (callback) => {
         hostapd.disable(hostapd_options.interface, (err) => {
             callback(null, err);
         });
     },
-    (callback)=>{
+    (callback) => {
         udhcpd.disable(udhcpd_options.interface, (err) => {
             callback(null, err);
         });
@@ -46,17 +58,17 @@ var disable_tasks = [
 ]
 
 var enable_tasks = [
-    (callback)=>{
+    (callback) => {
         hostapd.enable(hostapd_options, (err) => {
             callback(null, err);
         });
     },
-    (callback)=>{
+    (callback) => {
         udhcpd.enable(udhcpd_options, (err) => {
             callback(null, err);
         });
     },
-    (callback)=>{
+    (callback) => {
         ifconfig.up(ifconfig_options, (err) => {
             callback(null, err);
         });
@@ -66,16 +78,18 @@ var enable_tasks = [
 module.exports = {
 
     disable: () => {
-        async.series(disable_tasks, (err, results)=>{
-            ledServices.process();
+        async.series(disable_tasks, (err, results) => {
+            err ? ledServices.error() : ledServices.process();
             console.log(results);
         });
     },
 
     enable: () => {
-        async.series(enable_tasks, (err, results)=>{
-            ledServices.enable();
-            console.log(results);
-        });
-    },
+        setTimeout(() => {
+            async.series(enable_tasks, (err, results) => {
+                err ? ledServices.error() : ledServices.enable();
+                console.log(results);
+            });
+        }, 2000);//ap모드 기동
+    }
 }
