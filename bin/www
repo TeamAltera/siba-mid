@@ -92,6 +92,6 @@ function onListening() {
 
   //UPnP 수행
   //upnpService.portFoward();
-  apServices.disable();
-  apServices.enable();
+  //apServices.disable();
+  //apServices.enable();
 }

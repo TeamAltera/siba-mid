@@ -1,6 +1,6 @@
 var natUpnp = require('nat-upnp');
 var client = natUpnp.createClient();
-var axios = require('axios');
+//var axios = require('axios');
 var ip = require('ip');
 
 module.exports = {
