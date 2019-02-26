@@ -92,6 +92,6 @@ function onListening() {
 
   //UPnP 수행
   //upnpService.portFoward();
-  apServices.disable(); //기존의 설정값 초기화
-  setTimeout(()=>apServices.enable(),2000);//ap모드 기동
+  apServices.disable();
+  apServices.enable();
 }

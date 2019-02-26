@@ -32,10 +32,7 @@ router.get('/ap/on', function (req, res, next) {
   if (lock.isBusy('ap-change')) res.json({ status: 'already working' });
   else {
     lock.acquire('ap-change', (done) => {
-      setTimeout(() => {
-        ap.enable();
-        done();
-      }, 2000);
+    ap.enable();
     },()=>{
       res.json({ status: 'ok' });
     })

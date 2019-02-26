@@ -13,7 +13,7 @@ COPY package*.json ./
 USER root
 
 #install udhcpd, hostapd, dnsmasq
-RUN apt-get update && apt-get install -y hostapd dnsmasq udhcpd net-tools
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y hostapd dnsmasq udhcpd net-tools
 
 RUN npm install
 
