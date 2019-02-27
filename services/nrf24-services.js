@@ -29,7 +29,6 @@ module.exports = {
             console.log('broadcast start');
             var tx = nrf.openPipe(nrf24_options.pipes[0]);
             var rx = nrf.openPipe(nrf24_options.pipes[1]);
-            rx.on
         })
     }
 }

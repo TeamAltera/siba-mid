@@ -11,6 +11,8 @@ var app = express();
 
 var cors = require('cors');
 
+global.loggerFactory = require('./config/logger'); //logger factory 생성
+
 //cors 설정
 app.use(cors({
   'allowedHeaders': ['sessionId', 'Content-Type', 'Authorization'],
