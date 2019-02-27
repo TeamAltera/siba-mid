@@ -7,8 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('iothub:server');
 var http = require('http');
-var upnpService = require('../services/upnp-services');
-var apServices = require('../services/ap-services');
+
+
+var startupService = require('../services/startup-services');
 
 /**
  * Get port from environment and store in Express.
@@ -89,9 +90,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-
-  //UPnP 수행
-  //upnpService.portFoward();
-  //apServices.disable();
-  //apServices.enable();
+  
+  startupService.start(); //iot-hub기동
 }

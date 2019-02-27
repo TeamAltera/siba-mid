@@ -10,7 +10,6 @@ var usersRouter = require('./routes/users');
 var app = express();
 
 var cors = require('cors');
-var loggerCatcher = require('./services/logcatcher-services');
 
 global.loggerFactory = require('./config/logger'); //logger factory 생성
 

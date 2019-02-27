@@ -1,24 +1,34 @@
-var network = require('network');
-var ledServices = require('./led-services');
+var network = require('default-gateway');
+var ledService = require('./led-services');
+var upnpService = require('./upnp-services');
+var apService = require('./ap-services');
 
-const is_connect = () => {
-    network.get_public_ip((err, ip)=>{
-        if(ip){
-            ledServices.process();
-            loggerFactory.info('IoT Hub and NAT router connected');
-            return true;
-        }
-        else {
-            ledServices.error();
-            loggerFactory.info('IoT Hub and NAT router disconnected');
-            return false;
-        }
-    });
+const isConnect = () => {
+    try {
+        const nat = defaultGateway.v4.sync();
+        loggerFactory.info(`NAT router connected: ${nat}`);
+        return true;
+    } catch (e) {
+        console.log(e);
+        return false;
+    }
 }
 
 module.exports = {
-    start:()=>{
-       while(!is_connect()){} 
-       loggerFactory.info('establish upnp settings');
+    start: () => {
+        if (isConnect()) {
+            loggerFactory.info('start establish upnp');
+
+            //upnp 수행
+            upnpService.init(); 
+
+            //ap모드 실행
+            apService.disable();
+            apService.enable();
+        }
+        else{
+            ledService.error();
+            loggerFactory.info('NAT router disconnected');
+        }
     }
 }

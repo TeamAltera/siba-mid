@@ -8,7 +8,7 @@ const logDir = 'log';
 
 //익명 즉시 실행 함수
 (function (){
-    if(fs.existsSync(log_dir)) //log 디렉터리가 존재하지 않는다면 생성
+    if(fs.existsSync(logDir)) //log 디렉터리가 존재하지 않는다면 생성
         fs.mkdirSync(logDir);
 })();
 
@@ -18,7 +18,8 @@ const timeStampFormat = () => {
 };
 
 //logger 설정
-var logger = new (winston.Logger)({
+var logger = new winston.createLogger({
+    level: 'debug', //최소 레벨
     transports: [
         new (winstonDaily)({
             name: 'info-file',
