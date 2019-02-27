@@ -7,15 +7,15 @@
 var app = require('../app');
 var debug = require('debug')('iothub:server');
 var http = require('http');
-var upnpService = require('../services/upnpService');
-var dhcp = require('dhcp');
-var dhcpConfig = require('../config/dhcp-config.json');
+
+
+var startupService = require('../services/startup-services');
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3001');
+var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
@@ -23,29 +23,6 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-
-var dhcpServer = dhcp.createServer({
-  range:[
-    dhcpConfig.minimum, dhcpConfig.maximum
-  ],
-  static:{
-    "11:22:33:44:55:66": "192.168.1.100"
-  },
-  netmask: dhcpConfig.subnet,
-  router:[
-    dhcpConfig.router  
-  ],
-  bootFile: function (req) {
- 
-    if (req.clientId === 'foo bar') {
-      return 'x86linux.0';
-    } else {
-      return 'x64linux.0';
-    }
-  }
-});
-
-dhcpServer.listen();
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -113,7 +90,6 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-
-  //UPnP 수행
-  upnpService.portFoward();
+  
+  startupService.start(); //iot-hub기동
 }
