@@ -91,5 +91,9 @@ module.exports = {
                 console.log(results);
             });
         }, 2000);//ap모드 기동
+    },
+
+    exportHostapdSettings: () =>{
+        return hostapd_options;
     }
 }
