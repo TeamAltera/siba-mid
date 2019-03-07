@@ -1,10 +1,13 @@
 FROM arm32v7/node:10
 MAINTAINER sencom1028@gmail.com
 
-#RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+#&& chown -R node:node /home/node/app
 
 #explicit set work dir
-WORKDIR /home/node/app
+RUN mkdir -p /home/node
+WORKDIR /home/node
+
 
 #copy package.json && package-lock.json
 COPY package*.json ./
@@ -13,13 +16,16 @@ COPY package*.json ./
 USER root
 
 #install udhcpd, hostapd, dnsmasq
-RUN apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo
+RUN apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git make
 
-RUN wget http://tmrh20.github.io/RF24Installer/RPi/install.sh 
-RUN chmod +x install.sh 
-RUN yes Y | ./install.sh
+#RUN wget http://tmrh20.github.io/RF24Installer/RPi/install.sh 
+#RUN chmod +x install.sh 
+#RUN yes Y | ./install.sh
+
+RUN git clone https://github.com/nRF24/RF24.git
+RUN cd RF24 && make && sudo make install
+
 #RUN cd rf24libs/RF24/examples_linux
-
 RUN npm install
 
 #ADD init.sh /home/node/app/init.sh
