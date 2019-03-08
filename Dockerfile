@@ -16,14 +16,14 @@ COPY package*.json ./
 USER root
 
 #install udhcpd, hostapd, dnsmasq
-RUN apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git make
+RUN apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git
 
 #RUN wget http://tmrh20.github.io/RF24Installer/RPi/install.sh 
 #RUN chmod +x install.sh 
 #RUN yes Y | ./install.sh
 
 RUN git clone https://github.com/nRF24/RF24.git
-RUN cd RF24 && make && sudo make install
+RUN cd RF24 && ./configure --extra-cflags=-marm && sudo make install
 
 #RUN cd rf24libs/RF24/examples_linux
 RUN npm install
