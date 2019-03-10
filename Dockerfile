@@ -1,6 +1,6 @@
-FROM arm32v7/node:10
+FROM arm32v7/node:8
 MAINTAINER sencom1028@gmail.com
-
+ENV NRFGIT https://github.com/nRF24
 
 #&& chown -R node:node /home/node/app
 
@@ -18,25 +18,17 @@ USER root
 #install udhcpd, hostapd, dnsmasq
 RUN apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git
 
-#RUN wget http://tmrh20.github.io/RF24Installer/RPi/install.sh 
-#RUN chmod +x install.sh 
-#RUN yes Y | ./install.sh
+RUN git clone $NRFGIT/RF24.git
+RUN cd RF24 && ./configure --extra-cflags=-marm --prefix=/usr/local --driver=SPIDEV && make && sudo make install
+RUN git clone $NRFGIT/RF24Network.git RF24Network
+RUN cd RF24Network && make && sudo make install
+RUN git clone $NRFGIT/nRF24/RF24Mesh.git RF24Mesh
+RUN cd RF24Mesh && make && sudo make install
+RUN git clone $NRFGIT/RF24Gateway.git RF24Gateway
+RUN cd RF24Gateway && make && sudo make install
 
-RUN git clone https://github.com/nRF24/RF24.git
-RUN cd RF24 && ./configure --extra-cflags=-marm && sudo make install
-
-#RUN cd rf24libs/RF24/examples_linux
 RUN npm install
-
-#ADD init.sh /home/node/app/init.sh
-
-#RUN chmod +x /home/node/app/init.sh
-
-#RUN /home/node/app/init.sh
-
-#application code to the application dir on the container
-#COPY --chown=node:node . .
+RUN yes n | npm i nrf24
 
 EXPOSE 3000
-#ENTRYPOINT [ "/home/node/app/init.sh" ]
 CMD ["npm","start"]
