@@ -22,7 +22,7 @@ RUN git clone $NRFGIT/RF24.git
 RUN cd RF24 && ./configure --extra-cflags=-marm --prefix=/usr/local --driver=SPIDEV && make && sudo make install
 RUN git clone $NRFGIT/RF24Network.git RF24Network
 RUN cd RF24Network && make && sudo make install
-RUN git clone $NRFGIT/nRF24/RF24Mesh.git RF24Mesh
+RUN git clone $NRFGIT/RF24Mesh.git RF24Mesh
 RUN cd RF24Mesh && make && sudo make install
 RUN git clone $NRFGIT/RF24Gateway.git RF24Gateway
 RUN cd RF24Gateway && make && sudo make install
