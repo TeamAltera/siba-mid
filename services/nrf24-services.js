@@ -1,6 +1,6 @@
 var apServices = require('./ap-services')
 var nrf24=require("nRF24");
-var rf24= new nrf24.RF24(6,10);
+var rf24= new nrf24.RF24(6,10); //ce:6, cs:10
 
 const rf_options = {
     PALevel: nrf24.RF24_PA_LOW,
@@ -18,12 +18,14 @@ const sendDataset = {
 module.exports = {
 
     init: ()=>{
+        loggerFactory.info('initializing nrf24...');
         rf24.begin();
         rf24.config(rf_options);
         rf24.powerDown();
     },
 
     broadcast: ()=>{
+        loggerFactory.info('broadcast data via nrf24l01');
         rf24.begin();
         var data = Buffer.from(sendDataset);
         rf24.useWritePipe("0x72646f4e31");

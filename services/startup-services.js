@@ -2,6 +2,7 @@ var network = require('default-gateway');
 var ledService = require('./led-services');
 var upnpService = require('./upnp-services');
 var apService = require('./ap-services');
+var nrf24Service = require('./nrf24-services');
 
 const isConnect = () => {
     try {
@@ -25,6 +26,9 @@ module.exports = {
             //ap모드 실행
             apService.disable();
             apService.enable();
+
+            //nrf24 초기화
+            nrf24Service.init();
         }
         else{
             ledService.error();
