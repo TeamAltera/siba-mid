@@ -27,9 +27,14 @@ module.exports = {
     broadcast: ()=>{
         loggerFactory.info('broadcast data via nrf24l01');
         rf24.begin();
-        var data = Buffer.from(JSON.stringify(sendDataset));
         rf24.useWritePipe("0x72646f4e31");
-        rf24.write(data);
+        var originData = Buffer.from(JSON.stringify(sendDataset));
+
+        for(let i=0; i<originData.length; i+=30){
+            let len = originData.length-i;
+            rf24.write(originData.slice(i,len>=30 ? i+30:i+len));
+        }
+        
         rf24.powerDown();
     }
 }
