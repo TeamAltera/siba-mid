@@ -1,6 +1,6 @@
 var apServices = require('./ap-services')
-var nrf24=require("nRF24");
-var rf24= new nrf24.RF24(6,10); //ce:6, cs:10
+var nrf24=require("nrf24");
+var rf24= new nrf24.nRF24(22,0); //ce:6, cs:10
 
 const rf_options = {
     PALevel: nrf24.RF24_PA_LOW,
@@ -11,8 +11,8 @@ const rf_options = {
 const hostapd_options = apServices.exportHostapdSettings();
 
 const sendDataset = {
-    ssid: hostapd_options.ssid,
-    psw: hostapd_options.wpa_passphrase //wpa_passphrase는 암호화 시켜야
+    "ssid": hostapd_options.ssid,
+    "psw": hostapd_options.wpa_passphrase //wpa_passphrase는 암호화 시켜야
 }
 
 module.exports = {
@@ -27,9 +27,9 @@ module.exports = {
     broadcast: ()=>{
         loggerFactory.info('broadcast data via nrf24l01');
         rf24.begin();
-        var data = Buffer.from(sendDataset);
+        var data = Buffer.from(JSON.stringify(sendDataset));
         rf24.useWritePipe("0x72646f4e31");
-        apServices.write(data);
+        rf24.write(data);
         rf24.powerDown();
     }
 }

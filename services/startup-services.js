@@ -6,7 +6,7 @@ var nrf24Service = require('./nrf24-services');
 
 const isConnect = () => {
     try {
-        const nat = defaultGateway.v4.sync();
+        const nat = network.v4.sync();
         loggerFactory.info(`NAT router connected: ${nat}`);
         return true;
     } catch (e) {

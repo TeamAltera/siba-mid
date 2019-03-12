@@ -3,7 +3,7 @@ var Gpio = require('onoff').Gpio;
 const led_sets = {
     red: new Gpio(27,'out'),
     blue: new Gpio(17,'out'),
-    green: new Gpio(22,'out')
+    green: new Gpio(25,'out')
 }
 
 const rgb_control = (r,g,b)=>{
