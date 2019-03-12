@@ -56,7 +56,6 @@ router.get('/ap/off', function (req, res, next) {
 router.get('/rf', function (req, res, next) {
   //명령이 수행 중에는 lock을 걸어야
   nrf24Service.broadcast();
-  res.json({status:'ok'});
 });
 
 module.exports = router;

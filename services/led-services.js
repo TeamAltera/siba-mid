@@ -1,12 +1,15 @@
-const Gpio = require('onoff').Gpio;
-const blueLed = new Gpio(17,'out');
-const redLed = new Gpio(27,'out');
-const greenLed = new Gpio(22,'out');
+var Gpio = require('onoff').Gpio;
 
-function rgb_control(r,g,b){
-    redLed.writeSync(r);
-    greenLed.writeSync(g);
-    blueLed.writeSync(b);
+const led_sets = {
+    red: new Gpio(27,'out'),
+    blue: new Gpio(17,'out'),
+    green: new Gpio(25,'out')
+}
+
+const rgb_control = (r,g,b)=>{
+    led_sets.red.writeSync(r);
+    led_sets.green.writeSync(g);
+    led_sets.blue.writeSync(b);
 }
 
 module.exports = {

@@ -2,10 +2,11 @@ var network = require('default-gateway');
 var ledService = require('./led-services');
 var upnpService = require('./upnp-services');
 var apService = require('./ap-services');
+var nrf24Service = require('./nrf24-services');
 
 const isConnect = () => {
     try {
-        const nat = defaultGateway.v4.sync();
+        const nat = network.v4.sync();
         loggerFactory.info(`NAT router connected: ${nat}`);
         return true;
     } catch (e) {
@@ -25,6 +26,9 @@ module.exports = {
             //ap모드 실행
             apService.disable();
             apService.enable();
+
+            //nrf24 초기화
+            nrf24Service.init();
         }
         else{
             ledService.error();

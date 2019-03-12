@@ -4,7 +4,7 @@ var ifconfig = require('wireless-tools/ifconfig');
 var async = require('async');
 var ledServices = require('../services/led-services');
 
-var udhcpd_options = {
+const udhcpd_options = {
     interface: 'wlan0',
     start: '192.168.2.10',
     end: '192.168.2.254',
@@ -15,7 +15,7 @@ var udhcpd_options = {
     }
 };
 
-var hostapd_options = {
+const hostapd_options = {
     channel: 6,
     driver: 'nl80211',
     hw_mode: 'g',
@@ -32,7 +32,7 @@ var hostapd_options = {
     //rsn_pairwise: 'CCMP' //Use AES, instead of TKIP
 };
 
-var ifconfig_options = {
+const ifconfig_options = {
     interface: 'wlan0',
     ipv4_address: '192.168.2.1',
     ipv4_broadcast: '192.168.2.255',
@@ -91,5 +91,9 @@ module.exports = {
                 console.log(results);
             });
         }, 2000);//ap모드 기동
+    },
+
+    exportHostapdSettings: () =>{
+        return hostapd_options;
     }
 }
