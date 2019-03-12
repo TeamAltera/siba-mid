@@ -1,34 +1,35 @@
-var radio = require('nrf');
+var apServices = require('./ap-services')
+var nrf24=require("nrf24");
+var rf24= new nrf24.nRF24(22,0); //ce:6, cs:10
 
-const nrf24_options = {
-    channel: 0x73,
-    dataRate: '1Mbps',
-    crcBytes: 2,
-    cePin: 25,
-    irqPin: 24,
-    pipes: [0xF0F0F0F0E1, 0xF0F0F0F0D2],
-    spiDev: '/dev/spidev0.0'
+const rf_options = {
+    PALevel: nrf24.RF24_PA_LOW,
+    DateRate: nrf24.RF24_1MBPS,
+    Channel: 115
 }
 
-var nrf=radio.connect(nrf24_options.spiDev, nrf24_options.spiDev.cePin, nrf24_options.irqPin);
+const hostapd_options = apServices.exportHostapdSettings();
+
+const sendDataset = {
+    "ssid": hostapd_options.ssid,
+    "psw": hostapd_options.wpa_passphrase //wpa_passphrase는 암호화 시켜야
+}
 
 module.exports = {
 
     init: ()=>{
-        nrf.channel(nrf24_options.channel) //라디오 주파수 채널 설정
-            .dataRate(nrf24_options.dataRate) //채널 데이터 전송률 설정
-            .crcBytes(nrf24_options.crcBytes) //패킷 체크섬 크기 설정
-            //.autoRetransmit({count:15, delay:4000})
-            .begin(()=>{
-
-            })
+        loggerFactory.info('initializing nrf24...');
+        rf24.begin();
+        rf24.config(rf_options);
+        rf24.powerDown();
     },
 
     broadcast: ()=>{
-        nrf.begin(()=>{
-            console.log('broadcast start');
-            var tx = nrf.openPipe(nrf24_options.pipes[0]);
-            var rx = nrf.openPipe(nrf24_options.pipes[1]);
-        })
+        loggerFactory.info('broadcast data via nrf24l01');
+        rf24.begin();
+        var data = Buffer.from(JSON.stringify(sendDataset));
+        rf24.useWritePipe("0x72646f4e31");
+        rf24.write(data);
+        rf24.powerDown();
     }
 }
