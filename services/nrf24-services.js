@@ -30,11 +30,11 @@ module.exports = {
         rf24.useWritePipe("0x72646f4e31");
         var originData = Buffer.from(JSON.stringify(sendDataset));
 
-        for(let i=0; i<originData.length; i+=30){
+        for(let i=0; i<originData.length; i+=30){ //데이터 패킷은 30byte
             let len = originData.length-i;
             rf24.write(originData.slice(i,len>=30 ? i+30:i+len));
         }
-        
+
         rf24.powerDown();
     }
 }
