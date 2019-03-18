@@ -28,6 +28,7 @@ module.exports = {
         loggerFactory.info('broadcast data via nrf24l01');
         rf24.begin();
         rf24.useWritePipe("0x72646f4e31");
+        //json포맷의 데이터를 암호화 시켜서 전송해야
         var originData = Buffer.from(JSON.stringify(sendDataset));
 
         for(let i=0; i<originData.length; i+=30){ //데이터 패킷은 30byte
