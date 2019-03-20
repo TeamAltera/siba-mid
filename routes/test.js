@@ -4,7 +4,7 @@ var router = express.Router();
 var models = require('../models');
 
 router.get('/register', function (req, res, next) {
-    models.User.create({owner_id: 123, id:123})
+    models.hub.create({owner_id: 123, id:123})
     .then(result => {
         console.log('insert ok');
     })

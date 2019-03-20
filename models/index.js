@@ -31,6 +31,14 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+sequelize.sync()
+    .then(()=>{
+      loggerFactory.info('✓ DB creation success.');
+    })
+    .catch(err => {
+      loggerFactory.info(`✗ DB creation error. Please make sure DB is running. error: ${err}`);
+    })
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

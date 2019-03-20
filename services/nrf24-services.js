@@ -5,7 +5,7 @@ var rf24= new nrf24.nRF24(22,0); //ce:6, cs:10
 const rf_options = {
     PALevel: nrf24.RF24_PA_LOW,
     DateRate: nrf24.RF24_1MBPS,
-    Channel: 115
+    Channel: 25
 }
 
 const hostapd_options = apServices.exportHostapdSettings();
@@ -25,16 +25,26 @@ module.exports = {
     },
 
     broadcast: ()=>{
-        loggerFactory.info('broadcast data via nrf24l01');
+        loggerFactory.info('requested nrf24l01 send operation was called');
         rf24.begin();
         rf24.useWritePipe("0x72646f4e31");
+        rf24.changeWritePipe(true,64); // Set max stream size to 2Kb
         //json포맷의 데이터를 암호화 시켜서 전송해야
-        var originData = Buffer.from(JSON.stringify(sendDataset));
+        var buf = Buffer.from(JSON.stringify(sendDataset));
 
-        for(let i=0; i<originData.length; i+=30){ //데이터 패킷은 30byte
+        rf24.stream(big_buffer,function(success,tx_ok,tx_bytes,tx_req,frame_size,aborted) {
+            if(success){
+                loggerFactory.info('nrf24l01 send operation is success');
+            } 
+            else {
+              loggerFactory.info('nrf24l01 send operation is failed');
+              //console.log("Transfered:"+tx_bytes+ " total:" + tx_req + " OK->" + tx_ok);
+            }
+          });
+        /*for(let i=0; i<originData.length; i+=30){ //데이터 패킷은 30byte
             let len = originData.length-i;
             rf24.write(originData.slice(i,len>=30 ? i+30:i+len));
-        }
+        }*/
 
         rf24.powerDown();
     }
