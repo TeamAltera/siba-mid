@@ -39,5 +39,9 @@ module.exports = {
       //err ? ledServices.error() : ledServices.process();
       console.log(results);
     });
+  },
+
+  getUpnpOptions: () => {
+    return upnp_options;
   }
 }

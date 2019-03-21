@@ -4,6 +4,7 @@ var router = express.Router();
 var address = require('address');
 var ap = require('../services/ap-services');
 var nrf24Service = require('../services/nrf24-services');
+var upnpService = require('../services/upnp-services');
 var AsyncLock = require('async-lock');
 var lock = new AsyncLock();
 
@@ -16,11 +17,13 @@ router.post('/hub', (req, res, next) => {
 
   console.log(`token: ${authorization}`)
 
+  const upnp_options = upnpService.getUpnpOptions();
+
   const data = {
     exIp: req.body['natAddress'],
-    exPort: 12345,
+    exPort: upnp_options.out,
     inIp: address.ip(),
-    inPort: 3000,
+    inPort: upnp_options.in,
   }
 
   //post redirect 수행
