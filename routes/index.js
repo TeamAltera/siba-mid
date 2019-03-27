@@ -33,10 +33,11 @@ router.post('/hub', (req, res, next) => {
 
 router.get('/ap/on', function (req, res, next) {
   //lock 걸어야 on 수행중이면 off도 lock
-  if (lock.isBusy('ap-change')) res.json({ status: 'already working' });
+  if (lock.isBusy()) res.json({ status: 'already working' });
   else {
     lock.acquire('ap-change', (done) => {
     ap.enable();
+    done();
     },()=>{
       res.json({ status: 'ok' });
     })
@@ -45,7 +46,7 @@ router.get('/ap/on', function (req, res, next) {
 
 router.get('/ap/off', function (req, res, next) {
   //lock 걸어야 off 수행중이면 on도 lock
-  if (lock.isBusy('ap-change')) res.json({ status: 'already working' });
+  if (lock.isBusy()) res.json({ status: 'already working' });
   else {
     lock.acquire('ap-change', (done) => {
       ap.disable();

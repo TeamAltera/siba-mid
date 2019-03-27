@@ -65,7 +65,7 @@ var enable_tasks = [
     },
     (callback) => {
         udhcpd.enable(udhcpd_options, (err) => {
-            callback(null, err);
+            callback(null, err);// udhcpd enable error problem occured often
         });
     },
     (callback) => {
@@ -74,6 +74,8 @@ var enable_tasks = [
         });
     },
 ]
+
+var apError=false;
 
 module.exports = {
 
@@ -87,10 +89,13 @@ module.exports = {
     enable: () => {
         setTimeout(() => {
             async.series(enable_tasks, (err, results) => {
-                err ? ledServices.error() : ledServices.enable();
+                if(!apError){
+                    apError = err;
+                    apError ? ledServices.error() : ledServices.enable();
+                }
                 console.log(results);
             });
-        }, 2000);//ap모드 기동
+        }, 3000);//ap모드 기동
     },
 
     exportHostapdSettings: () =>{
