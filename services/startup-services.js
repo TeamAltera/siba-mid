@@ -3,6 +3,7 @@ var ledService = require('./led-services');
 var upnpService = require('./upnp-services');
 var apService = require('./ap-services');
 var nrf24Service = require('./nrf24-services');
+var models = require('../models');
 
 const isConnect = () => {
     try {
@@ -18,10 +19,12 @@ const isConnect = () => {
 module.exports = {
     start: () => {
         if (isConnect()) {
-            loggerFactory.info('start establish upnp');
-
             //upnp 수행
             upnpService.init(); 
+
+            models.hub.findAll().then(data=>{
+                console.log(data);
+            })
 
             //ap모드 실행
             apService.disable();
