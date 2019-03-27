@@ -22,7 +22,7 @@ module.exports = {
             //upnp 수행
             upnpService.init(); 
 
-            models.findAll().then(data=>{
+            models.hub.findAll().then(data=>{
                 console.log(data);
             })
 

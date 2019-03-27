@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   var hub = sequelize.define('hub', {
-    MAC: {
+    mac: {
       type: DataTypes.CHAR(17),
       allowNull: false,
       primaryKey: true
@@ -35,11 +35,11 @@ module.exports = function(sequelize, DataTypes) {
     hub.hasMany(models.dev);
     hub.hasMany(models.user);
     hub.hasOne(models.rf,{
-      foreignKey: 'MAC',
+      foreignKey: 'mac',
       as: 'rf'
     })
     hub.hasOne(models.ap,{
-      foreignKey: 'MAC',
+      foreignKey: 'mac',
       as: 'ap'
     })
   }

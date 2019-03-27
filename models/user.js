@@ -11,12 +11,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(5),
       allowNull: true
     },
-    MAC: {
+    mac: {
       type: DataTypes.CHAR(17),
       allowNull: false,
       references: {
         model: 'hub',
-        key: 'MAC'
+        key: 'mac'
       }
     }
   }, {
@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
 
   user.associate = (models) => {
     user.belongsTo(models.hub, {
-      foreignKey: 'MAC'
+      foreignKey: 'mac'
     })
   }
 

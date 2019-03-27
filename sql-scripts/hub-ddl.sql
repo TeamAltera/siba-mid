@@ -2,34 +2,34 @@
 CREATE TABLE ap
 (
 	state                boolean NULL,
-	MAC                  CHAR(17) NOT NULL
+	mac                  CHAR(17) NOT NULL
 );
 
 
 
 ALTER TABLE ap
-ADD PRIMARY KEY (MAC);
+ADD PRIMARY KEY (mac);
 
 
 
 CREATE TABLE dev
 (
-	dev_MAC              CHAR(17) NOT NULL,
+	dev_mac              CHAR(17) NOT NULL,
 	cur_ip               VARCHAR(15) NULL,
 	dev_type             VARCHAR(30) NULL,
-	MAC                  CHAR(17) NOT NULL
+	mac                  CHAR(17) NOT NULL
 );
 
 
 
 ALTER TABLE dev
-ADD PRIMARY KEY (dev_MAC);
+ADD PRIMARY KEY (dev_mac);
 
 
 
 CREATE TABLE hub
 (
-	MAC                  CHAR(17) NOT NULL,
+	mac                  CHAR(17) NOT NULL,
 	cur_ip               VARCHAR(15) NULL,
 	prev_ip              VARCHAR(15) NULL,
 	upnp_port            INTEGER NULL,
@@ -40,20 +40,20 @@ CREATE TABLE hub
 
 
 ALTER TABLE hub
-ADD PRIMARY KEY (MAC);
+ADD PRIMARY KEY (mac);
 
 
 
 CREATE TABLE rf
 (
 	state                boolean NULL,
-	MAC                  CHAR(17) NOT NULL
+	mac                  CHAR(17) NOT NULL
 );
 
 
 
 ALTER TABLE rf
-ADD PRIMARY KEY (MAC);
+ADD PRIMARY KEY (mac);
 
 
 
@@ -61,7 +61,7 @@ CREATE TABLE user
 (
 	id                   INTEGER NOT NULL,
 	role_type            VARCHAR(5) NULL,
-	MAC                  CHAR(17) NOT NULL
+	mac                  CHAR(17) NOT NULL
 );
 
 
@@ -72,21 +72,21 @@ ADD PRIMARY KEY (id);
 
 
 ALTER TABLE ap
-ADD FOREIGN KEY R_1 (MAC) REFERENCES hub (MAC);
+ADD FOREIGN KEY R_1 (mac) REFERENCES hub (mac);
 
 
 
 ALTER TABLE dev
-ADD FOREIGN KEY R_4 (MAC) REFERENCES hub (MAC);
+ADD FOREIGN KEY R_4 (mac) REFERENCES hub (mac);
 
 
 
 ALTER TABLE rf
-ADD FOREIGN KEY R_2 (MAC) REFERENCES hub (MAC);
+ADD FOREIGN KEY R_2 (mac) REFERENCES hub (mac);
 
 
 
 ALTER TABLE user
-ADD FOREIGN KEY R_3 (MAC) REFERENCES hub (MAC);
+ADD FOREIGN KEY R_3 (mac) REFERENCES hub (mac);
 
 

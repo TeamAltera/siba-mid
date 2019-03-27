@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   var dev = sequelize.define('dev', {
-    dev_MAC: {
+    dev_mac: {
       type: DataTypes.CHAR(17),
       allowNull: false,
       primaryKey: true
@@ -15,12 +15,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(30),
       allowNull: true
     },
-    MAC: {
+    mac: {
       type: DataTypes.CHAR(17),
       allowNull: false,
       references: {
         model: 'hub',
-        key: 'MAC'
+        key: 'mac'
       }
     }
   }, {
@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
 
   dev.associate = (models) =>{
     dev.belongsTo(models.hub, {
-      foreignKey: 'MAC'
+      foreignKey: 'mac'
     })
   }
 

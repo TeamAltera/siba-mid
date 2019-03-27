@@ -6,13 +6,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER(1),
       allowNull: true
     },
-    MAC: {
+    mac: {
       type: DataTypes.CHAR(17),
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'hub',
-        key: 'MAC'
+        key: 'mac'
       }
     }
   }, {
