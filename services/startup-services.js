@@ -12,6 +12,7 @@ const hubSetup = () => {
 
     const connectionObj = setInterval(() => {
         internetAvailable({
+            domainName: 'www.google.com',
             timeout: 4000,
             retries: 1
         }).then(() => {
@@ -35,7 +36,7 @@ const hubSetup = () => {
                     require('getmac').getMac({ iface: 'eth0' }, (err, macAddress) => {
                         if (err) {
                             ledService.error();
-                            loggerFactory.info('cannot search mac address');
+                            loggerFactory.error('cannot search mac address');
                             throw err;
                         }
                         console.log(macAddress)
@@ -44,7 +45,7 @@ const hubSetup = () => {
                     });
                 }
 
-                if (hubInfo.length == 1 && hubInfo[0].is_reg == 1) { //registration 된 경우
+                if (hubInfo.length === 1 && hubInfo[0].is_reg === 1) { //registration 된 경우
 
                     var natIPv4 = network.v4.sync();
                     console.log(localIPv4)
@@ -87,7 +88,7 @@ const hubSetup = () => {
         }).catch(() => {
             //internet연결이 되어 있지 않다면, error led 점등
             ledService.error();
-            loggerFactory.info('No internet');
+            console.log('No internet connected');
         })
     }, 5000);
 }
