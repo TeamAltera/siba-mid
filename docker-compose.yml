@@ -1,16 +1,17 @@
 version: "3"
 
 services:
-  web:
+  hub:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfiles/node/Dockerfile
     restart: always
     container_name: hub
     ports: 
       - "3000:3000"
     depends_on:
       - db
+      - cache
     network_mode: host
     privileged: true
 
@@ -38,3 +39,11 @@ services:
     ports:
       - "3306:3306"
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  cache:
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/redis/Dockerfile
+    restart: always
+    ports: 
+      - "6379:6379"

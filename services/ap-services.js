@@ -20,7 +20,7 @@ const hostapd_options = {
     driver: 'nl80211',
     hw_mode: 'g',
     interface: 'wlan0',
-    ssid: 'IoT-Hub', //ssid
+    ssid: 'IoT-Hub', //ssid는 owner id
     wpa: 2,
     wpa_passphrase: 'raspberry', //비밀번호
     //ieee80211n: 1, //enable 802.11n
