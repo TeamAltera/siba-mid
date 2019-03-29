@@ -4,7 +4,7 @@ var redisClient = redis.createClient(
     process.env.REDIS_HOST || 'localhost',
 );
 
-redisClient.auth(null, (err) => {
+redisClient.auth('foobared', (err) => {
     if (err){
         loggerFactory.error(`redis authorization exception occured: ${err}`);
         throw err;

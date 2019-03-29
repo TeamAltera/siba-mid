@@ -2,9 +2,11 @@ version: "3"
 
 services:
   hub:
+
+    #production시에는 image로 변경할 것
     build:
       context: .
-      dockerfile: ./Dockerfiles/node/Dockerfile
+      dockerfile: ./Dockerfile
     restart: always
     container_name: hub
     ports: 
@@ -41,9 +43,11 @@ services:
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   cache:
-    build:
-      context: .
-      dockerfile: ./Dockerfiles/redis/Dockerfile
+    images: arm32v7/redis
     restart: always
+    container_name: cache
     ports: 
       - "6379:6379"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--appendonly", "yes"]
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf

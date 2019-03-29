@@ -5,8 +5,6 @@ var address = require('address');
 var ap = require('../services/ap-services');
 var nrf24Service = require('../services/nrf24-services');
 var upnpService = require('../services/upnp-services');
-var AsyncLock = require('async-lock');
-var lock = new AsyncLock();
 
 router.post('/', (req, res, next) => {
   //허브 등록
