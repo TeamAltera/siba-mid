@@ -22,6 +22,6 @@ module.exports = {
         httpReq.write(data);
         httpReq.end();
 
-        func();
+        if(func) func();
     }
 }

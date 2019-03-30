@@ -14,7 +14,7 @@ const hubSetup = () => {
         internetAvailable({
             domainName: 'www.google.com',
             timeout: 4000,
-            retries: 1
+            host: '8.8.8.8'
         }).then(() => {
             //internet 연결이 되어 있다면 초기화 시작
             //전체 수행 단계에서 예외 발생 시 role back해야

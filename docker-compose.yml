@@ -2,7 +2,6 @@ version: "3"
 
 services:
   hub:
-
     #production시에는 image로 변경할 것
     build:
       context: .
@@ -43,11 +42,20 @@ services:
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   cache:
-    images: arm32v7/redis
+    image: arm32v7/redis
     restart: always
-    container_name: cache
+    container_name: redis
+    network_mode: host
     ports: 
       - "6379:6379"
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--appendonly", "yes"]
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     volumes:
       - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+    #healthcheck를 통해 redis 컨테이너가 제대로 실행되는지 체크
+    healthcheck: 
+      test: "exec 3<> /dev/tcp/127.0.0.1/6379 && echo PING >&3 && head -1 <&3 | grep PONG"
+      timeout: 5s
+      interval: 5s
+      retries: 5
+    
