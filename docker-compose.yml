@@ -26,11 +26,11 @@ services:
       - ./sql-scripts:/docker-entrypoint-initdb.d
 
     #healthcheck를 통해 db컨테이너가 제대로 실행되는지 체크
-    healthcheck:
-      test: "/usr/bin/mysql --user=user --password=user --execute \"SHOW DATABASES;\""
-      interval: 3s
-      timeout: 1s
-      retries: 10
+    #healthcheck:
+    #  test: "/usr/bin/mysql --user=user --password=user --execute \"SHOW DATABASES;\""
+    #  interval: 3s
+    #  timeout: 1s
+    #  retries: 10
     environment:
       - MYSQL_ROOT_PASSWORD=admin
       - MYSQL_DATABASE=hub_system
