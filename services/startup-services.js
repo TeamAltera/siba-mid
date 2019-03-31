@@ -39,7 +39,6 @@ const hubSetup = () => {
                             loggerFactory.error('cannot search mac address');
                             throw err;
                         }
-                        console.log(macAddress)
 
                         models.hub.create({ mac: macAddress, is_reg: 0 });
                     });
@@ -80,9 +79,11 @@ const hubSetup = () => {
 
                     apService.disable();
                     apService.enable(); //ap 기동
+                    loggerFactory.info('hub setup success');
                 }
                 else { //registration이 안되었다면
                     ledService.process();
+                    loggerFactory.info('hub is not register');
                 }
             });
         }).catch(() => {

@@ -1,8 +1,7 @@
 version: "3"
 
 services:
-  hub:
-    #production시에는 image로 변경할 것
+  web: #production시에는 image로 변경할 것
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -20,6 +19,7 @@ services:
     image: jsurf/rpi-mariadb
     restart: always
     container_name: maria
+    network_mode: host
 
     volumes:
       - ./docker/data:/var/lib/maria/data
