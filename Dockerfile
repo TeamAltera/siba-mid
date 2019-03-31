@@ -33,4 +33,8 @@ RUN yes n | npm i nrf24
 COPY --chown=node:node . .
 
 EXPOSE 3000
-CMD ["npm","start"]
+
+ADD ./wait-for.sh /wait-for.sh
+RUN chmod +x /wait-for.sh
+
+CMD /wait-for.sh && npm start
