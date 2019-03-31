@@ -1,4 +1,6 @@
 var redisClient = require('../config/redis');
+const {promisify} = require('util');
+const getAsync = promisify(redisClient.get).bind(redisClient);
 
 const handleWithLock = async (lockId, fn, res) => {
     let lockState;
@@ -7,7 +9,9 @@ const handleWithLock = async (lockId, fn, res) => {
       if (lockState === 'locked') throw new Error('Resource is locked.');
       const result = await fn();
       if (result) {
-        return res.status(200).json(result);
+        return res.status(200).json({
+            status: true
+        });
       }
       res.status(204).end();
     } catch (err) {
@@ -28,8 +32,9 @@ const handleWithLock = async (lockId, fn, res) => {
 
   /* : 'locked' | 'acquired' */
   const lock = async (lockId) => {
-    if (!redisClient.get(lockId)) {
-      redisClient.setbit(lockId, 1);
+    let state = await getAsync(lockId);
+    if (state === 'unlock') {
+      redisClient.set(lockId, 'lock');
       console.log(timestamp(), 'lock acquired');
       return 'acquired';
     } else {
@@ -43,7 +48,7 @@ const handleWithLock = async (lockId, fn, res) => {
   
   const unlock = async (lockId) => {
     console.log(timestamp(), `request is unlocked`);
-    redisClient.setbit(lockId, 0);
+    redisClient.set(lockId, 'unlock');
   }
 
   module.exports = {

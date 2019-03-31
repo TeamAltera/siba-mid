@@ -75,30 +75,35 @@ var enable_tasks = [
     },
 ]
 
-var apError=false;
+var apError = false;
 
 module.exports = {
 
     disable: () => {
-        async.series(disable_tasks, (err, results) => {
-            err ? ledServices.error() : ledServices.process();
-            console.log(results);
+        return new Promise((resolve, reject) => {
+            async.series(disable_tasks, (err, results) => {
+                err ? ledServices.error() : ledServices.process();
+                console.log(results);
+                resolve(true);
+            })
         });
     },
 
     enable: () => {
-        setTimeout(() => {
+        return new Promise((resolve, reject)=>{setTimeout(() => {
             async.series(enable_tasks, (err, results) => {
-                if(!apError){
+                if (!apError) {
                     apError = err;
                     apError ? ledServices.error() : ledServices.enable();
                 }
                 console.log(results);
+                resolve(true);
             });
-        }, 3000);//ap모드 기동
+        }, 3000)});//ap모드 기동
+
     },
 
-    exportHostapdSettings: () =>{
+    exportHostapdSettings: () => {
         return hostapd_options;
     }
 }

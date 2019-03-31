@@ -3,14 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
 var hubRouter = require('./routes/hub');
 var userRouter = require('./routes/user');
 var apRouter = require('./routes/ap');
-
 var app = express();
-
 var cors = require('cors');
+var apService = require('./services/ap-services');
+var nodeCleanup = require('node-cleanup');
 
 global.loggerFactory = require('./config/logger'); //logger factory 생성
 
@@ -53,6 +52,9 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-
+//when process clean up then call
+nodeCleanup((exitCode, signal)=>{
+  apService.disable();
+});
 
 module.exports = app;

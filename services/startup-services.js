@@ -7,6 +7,7 @@ var apService = require('./ap-services');
 var nrf24Service = require('./nrf24-services');
 var requestService = require('./request-service');
 var models = require('../models');
+var redisClient = require('../config/redis');
 
 const hubSetup = () => {
 
@@ -28,6 +29,7 @@ const hubSetup = () => {
 
             //nrf24 초기화
             nrf24Service.init();
+            redisClient.set('aplock','unlock');
 
             models.hub.findAll().then(hubInfo => {
                 console.log(hubInfo);
@@ -77,8 +79,9 @@ const hubSetup = () => {
                         }
                     });
 
-                    apService.disable();
-                    apService.enable(); //ap 기동
+                    apService.disable().then(()=>{
+                        apService.enable(); //ap 기동
+                    })
                     loggerFactory.info('hub setup success');
                 }
                 else { //registration이 안되었다면
