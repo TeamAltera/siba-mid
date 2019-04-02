@@ -7,6 +7,7 @@ var apService = require('./ap-services');
 var nrf24Service = require('./nrf24-services');
 var requestService = require('./request-service');
 var models = require('../models');
+var redisClient = require('../config/redis');
 
 const hubSetup = () => {
 
@@ -14,7 +15,7 @@ const hubSetup = () => {
         internetAvailable({
             domainName: 'www.google.com',
             timeout: 4000,
-            retries: 1
+            host: '8.8.8.8'
         }).then(() => {
             //internet 연결이 되어 있다면 초기화 시작
             //전체 수행 단계에서 예외 발생 시 role back해야
@@ -28,6 +29,7 @@ const hubSetup = () => {
 
             //nrf24 초기화
             nrf24Service.init();
+            redisClient.set('aplock','unlock');
 
             models.hub.findAll().then(hubInfo => {
                 console.log(hubInfo);
@@ -39,13 +41,14 @@ const hubSetup = () => {
                             loggerFactory.error('cannot search mac address');
                             throw err;
                         }
-                        console.log(macAddress)
 
                         models.hub.create({ mac: macAddress, is_reg: 0 });
+                        redisClient.set('isreg','N');
                     });
                 }
 
                 if (hubInfo.length === 1 && hubInfo[0].is_reg === 1) { //registration 된 경우
+                    redisClient.set('isreg','Y');
 
                     var natIPv4 = network.v4.sync();
                     console.log(localIPv4)
@@ -78,11 +81,15 @@ const hubSetup = () => {
                         }
                     });
 
-                    apService.disable();
-                    apService.enable(); //ap 기동
+                    apService.disable().then(()=>{
+                        apService.enable(); //ap 기동
+                    })
+                    loggerFactory.info('hub setup success');
                 }
                 else { //registration이 안되었다면
+                    redisClient.set('isreg','N');
                     ledService.process();
+                    loggerFactory.info('hub is not register');
                 }
             });
         }).catch(() => {
