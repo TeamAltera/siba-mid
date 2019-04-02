@@ -15,7 +15,7 @@ const handleWithLock = async (lockId, fn, res) => {
       }
       res.status(204).end();
     } catch (err) {
-      res.status(409).json({
+      res.status(200).json({
         status: false,
         error: err.message,
       });

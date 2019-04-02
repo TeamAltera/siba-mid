@@ -5,9 +5,9 @@ NRFGIT="https://github.com/nRF24"
 apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git mysql-client
 
 git clone "$NRFGIT/RF24.git"
-git clone "$NRFGIT/RF24Network.git RF24Network"
-git clone "$NRFGIT/RF24Mesh.git RF24Mesh"
-git clone "$NRFGIT/RF24Gateway.git RF24Gateway"
+git clone "$NRFGIT/RF24Network.git" RF24Network
+git clone "$NRFGIT/RF24Mesh.git" RF24Mesh
+git clone "$NRFGIT/RF24Gateway.git" RF24Gateway
 
 >&2 echo "build RF24 package"
 cd RF24 && ./configure --extra-cflags=-marm --prefix=/usr/local --driver=SPIDEV && make && sudo make install && cd -

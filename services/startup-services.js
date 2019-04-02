@@ -43,10 +43,12 @@ const hubSetup = () => {
                         }
 
                         models.hub.create({ mac: macAddress, is_reg: 0 });
+                        redisClient.set('isreg','N');
                     });
                 }
 
                 if (hubInfo.length === 1 && hubInfo[0].is_reg === 1) { //registration 된 경우
+                    redisClient.set('isreg','Y');
 
                     var natIPv4 = network.v4.sync();
                     console.log(localIPv4)
@@ -85,6 +87,7 @@ const hubSetup = () => {
                     loggerFactory.info('hub setup success');
                 }
                 else { //registration이 안되었다면
+                    redisClient.set('isreg','N');
                     ledService.process();
                     loggerFactory.info('hub is not register');
                 }

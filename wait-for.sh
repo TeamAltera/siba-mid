@@ -13,14 +13,14 @@ maxcounter=45
 #looping check variable
 couter=1
 
-while ! mysql --host="$MYSQL_HOST" --port="$MYSQL_PORT" --user="$MYSQL_USERNAME" --password="$MYSQL_PASSWORD" -e "show databases;" > /dev/null
-2>&1;
-do
+while ! mysql --protocol TCP -h "$MYSQL_HOST" -u "$MYSQL_USERNAME" -p"$MYSQL_PASSWORD" -e "show databases;" > /dev/null 2>&1; do
   >&2 echo "mariadb is unavailable - SLEEPING"
   sleep 1
   counter=`expr $counter + 1`
   if [ $counter -gt $maxcounter ]; then
     >&2 echo "waiting maraidb FAILED"
+    exit 1
+  fi;
 done
 
 >&2 echo "mariadb is up - EXECUTING COMMAND"
