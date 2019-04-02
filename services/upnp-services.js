@@ -35,9 +35,15 @@ var upnp_tasks = [
 
 module.exports = {
   init: () => {
+    loggerFactory.info('try establish upnp');
+
     async.series(upnp_tasks, (err, results) => {
       //err ? ledServices.error() : ledServices.process();
       console.log(results);
     });
+  },
+
+  getUpnpOptions: () => {
+    return upnp_options;
   }
 }

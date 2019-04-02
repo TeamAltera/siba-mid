@@ -20,7 +20,7 @@ const hostapd_options = {
     driver: 'nl80211',
     hw_mode: 'g',
     interface: 'wlan0',
-    ssid: 'IoT-Hub', //ssid
+    ssid: 'IoT-Hub', //ssid는 owner id
     wpa: 2,
     wpa_passphrase: 'raspberry', //비밀번호
     //ieee80211n: 1, //enable 802.11n
@@ -65,7 +65,7 @@ var enable_tasks = [
     },
     (callback) => {
         udhcpd.enable(udhcpd_options, (err) => {
-            callback(null, err);
+            callback(null, err);// udhcpd enable error problem occured often
         });
     },
     (callback) => {
@@ -75,25 +75,35 @@ var enable_tasks = [
     },
 ]
 
+var apError = false;
+
 module.exports = {
 
     disable: () => {
-        async.series(disable_tasks, (err, results) => {
-            err ? ledServices.error() : ledServices.process();
-            console.log(results);
+        return new Promise((resolve, reject) => {
+            async.series(disable_tasks, (err, results) => {
+                err ? ledServices.error() : ledServices.process();
+                console.log(results);
+                resolve(true);
+            })
         });
     },
 
     enable: () => {
-        setTimeout(() => {
+        return new Promise((resolve, reject)=>{setTimeout(() => {
             async.series(enable_tasks, (err, results) => {
-                err ? ledServices.error() : ledServices.enable();
+                if (!apError) {
+                    apError = err;
+                    apError ? ledServices.error() : ledServices.enable();
+                }
                 console.log(results);
+                resolve(true);
             });
-        }, 2000);//ap모드 기동
+        }, 3000)});//ap모드 기동
+
     },
 
-    exportHostapdSettings: () =>{
+    exportHostapdSettings: () => {
         return hostapd_options;
     }
 }

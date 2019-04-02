@@ -8,7 +8,7 @@ const logDir = 'log';
 
 //익명 즉시 실행 함수
 (function (){
-    if(fs.existsSync(logDir)) //log 디렉터리가 존재하지 않는다면 생성
+    if(!fs.existsSync(logDir)) //log 디렉터리가 존재하지 않는다면 생성
         fs.mkdirSync(logDir);
 })();
 
