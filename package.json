@@ -23,6 +23,7 @@
     "morgan": "~1.9.0",
     "nan": "^2.12.1",
     "nat-upnp": "^1.1.1",
+    "network": "^0.4.1",
     "node-cleanup": "^2.1.2",
     "node-gyp": "^3.8.0",
     "onoff": "^3.2.9",
