@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 
 services:
   web: #production시에는 image로 변경할 것
@@ -12,6 +12,7 @@ services:
     depends_on:
       - db
       - cache
+      - mqtt
     network_mode: host
     privileged: true
 
@@ -59,3 +60,18 @@ services:
       interval: 5s
       retries: 5
     
+  mqtt:
+    image: arm32v6/eclipse-mosquitto
+    restart: always
+    hostname: mosquitto
+    container_name: mosquitto
+    expose:
+      - "1883"
+      - "9001"
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - default
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
