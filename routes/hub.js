@@ -59,6 +59,7 @@ router.get('/', (req, res, next) => {
   }
 })
 
+//허브 등록
 router.post('/', (req, res, next) => {
 
   //허브 등록 여부 조회
