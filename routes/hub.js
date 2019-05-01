@@ -50,7 +50,7 @@ router.get('/', (req, res, next) => {
       }
     });
 
-  } catch{
+  } catch(e){
     res.json({
       status: false,
       external_ip: '',
@@ -119,7 +119,7 @@ router.post('/', (req, res, next) => {
         });
       }
 
-    } catch{
+    } catch(e){
       //등록 실패여부 전송
       res.json({
         status: false
