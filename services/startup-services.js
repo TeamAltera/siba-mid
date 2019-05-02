@@ -24,11 +24,15 @@ const hubSetup = () => {
 
             //upnp 수행
             upnpService.init();
+
+            apService.disable().then(() => {
+                apService.enable(); //ap 기동
+            })
             //NAT에 허브가 여러대 연결 된 경우?
             //허브가 원선에 바로 물려있다면 예외 발생시켜야
 
             //nrf24 초기화
-            nrf24Service.init();
+            /*nrf24Service.init();
             redisClient.set('aplock', 'unlock');
 
             models.hub.findAll().then(hubInfo => {
@@ -98,7 +102,7 @@ const hubSetup = () => {
                     ledService.process();
                     loggerFactory.info('hub is not register');
                 }
-            });
+            });*/
         }).catch(() => {
             //internet연결이 되어 있지 않다면, error led 점등
             ledService.error();

@@ -34,6 +34,7 @@ const hostapd_options = {
 
 const ifconfig_options = {
     interface: 'wlan0',
+    //link: 'ethernet',
     ipv4_address: '192.168.2.1',
     ipv4_broadcast: '192.168.2.255',
     ipv4_subnet_mask: '255.255.255.0'
@@ -59,6 +60,11 @@ var disable_tasks = [
 
 var enable_tasks = [
     (callback) => {
+        ifconfig.up(ifconfig_options, (err) => {
+            callback(null, err);
+        });
+    },
+    (callback) => {
         hostapd.enable(hostapd_options, (err) => {
             if(err){
                 hostapd.enable(hostapd_options, (err) => {
@@ -71,11 +77,6 @@ var enable_tasks = [
     (callback) => {
         udhcpd.enable(udhcpd_options, (err) => {
             callback(null, err);// udhcpd enable error problem occured often
-        });
-    },
-    (callback) => {
-        ifconfig.up(ifconfig_options, (err) => {
-            callback(null, err);
         });
     },
 ]
