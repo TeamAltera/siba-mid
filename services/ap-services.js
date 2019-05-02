@@ -60,7 +60,12 @@ var disable_tasks = [
 var enable_tasks = [
     (callback) => {
         hostapd.enable(hostapd_options, (err) => {
-            callback(null, err);
+            if(err){
+                hostapd.enable(hostapd_options, (err) => {
+                    callback(null, err);   
+                })
+            }
+            else callback(null, err);
         });
     },
     (callback) => {
