@@ -21,4 +21,14 @@ cd RF24Mesh && make && sudo make install && cd -
 >&2 echo "build RF24Gateway package"
 cd RF24Gateway && make && sudo make install && cd -
 
+# prevent wpa_supplicant from starting on boot
+#sudo systemctl mask wpa_supplicant.service
+
+# rename wpa_supplicant on the host to ensure that it is not
+# used.
+#sudo mv /sbin/wpa_supplicant /sbin/no_wpa_supplicant
+
+# kill any running processes named wpa_supplicant
+#sudo pkill wpa_supplicant
+
 npm install && yes n | npm i nrf24

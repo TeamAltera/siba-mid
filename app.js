@@ -9,8 +9,6 @@ var apRouter = require('./routes/ap');
 var devRouter = require('./routes/dev');
 var app = express();
 var cors = require('cors');
-var apService = require('./services/ap-services');
-var nodeCleanup = require('node-cleanup');
 
 global.loggerFactory = require('./config/logger'); //logger factory 생성
 
@@ -52,11 +50,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-//when process clean up then call
-nodeCleanup((exitCode, signal)=>{
-  apService.disable();
 });
 
 module.exports = app;
