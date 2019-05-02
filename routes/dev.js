@@ -27,5 +27,4 @@ router.get('/', [validationService.registerValidation,(req, res, next) => {
 router.post('/:devmac', [validationService.registerValidation, (req, res, next) => {
     handleLockService.handleWithLock(req.params.devmac, apService.enable, res);
 }]);
-
 module.exports = router;
