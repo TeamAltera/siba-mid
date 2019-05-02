@@ -51,7 +51,7 @@ services:
       - "6379:6379"
     command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./cont-conf/redis.conf:/usr/local/etc/redis/redis.conf
 
     #healthcheck를 통해 redis 컨테이너가 제대로 실행되는지 체크
     healthcheck: 
@@ -74,4 +74,4 @@ services:
     networks:
       - default
     volumes:
-      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./cont-conf/mosquitto.conf:/mosquitto/config/mosquitto.conf

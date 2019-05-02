@@ -6,10 +6,9 @@ var logger = require('morgan');
 var hubRouter = require('./routes/hub');
 var userRouter = require('./routes/user');
 var apRouter = require('./routes/ap');
+var devRouter = require('./routes/dev');
 var app = express();
 var cors = require('cors');
-var apService = require('./services/ap-services');
-var nodeCleanup = require('node-cleanup');
 
 global.loggerFactory = require('./config/logger'); //logger factory 생성
 
@@ -35,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/hub', hubRouter);
 app.use('/user', userRouter);
 app.use('/ap', apRouter);
+app.use('/dev', devRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -50,11 +50,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-//when process clean up then call
-nodeCleanup((exitCode, signal)=>{
-  apService.disable();
 });
 
 module.exports = app;
