@@ -1,3 +1,4 @@
+CREATE SEQUENCE dev_seq START WITH 1 INCREMENT BY 1;
 
 CREATE TABLE ap
 (
@@ -17,8 +18,9 @@ CREATE TABLE dev
 	dev_mac              CHAR(17) NOT NULL,
 	cur_ip               VARCHAR(15) NULL,
 	dev_type             VARCHAR(30) NULL,
-	mac                  CHAR(17) NOT NULL
-);
+	mac                  CHAR(17) NOT NULL,
+    dev_id          INTEGER AUTO_INCREMENT
+)AUTO_INCREMENT = 1;
 
 
 
