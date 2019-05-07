@@ -87,11 +87,11 @@ const hubSetup = () => {
                 let isReg = false;
                 let mac = null;
 
-                let isHubFirstStartup = hubInfo.length !== 1;
-                let isHubRegist = hubInfo[0].is_reg === 1;
+                //let isHubFirstStartup = hubInfo.length !== 1;
+                //let isHubRegist = isHubFirstStartup ? false : hubInfo[0].is_reg === 1;
 
                 //허브 기동 시 시스템 기본 정보 초기화
-                if (isHubFirstStartup || !isHubRegist) {
+                if (hubInfo.length !==1 || !(hubInfo[0].is_reg === 1)) {
                     getMac.getMac(mac_interface, (err, macAddress) => {
                         if (err) {
                             ledService.error();
@@ -99,7 +99,7 @@ const hubSetup = () => {
                             throw err;
                         }
 
-                        if(isHubFirstStartup)
+                        if(hubInfo.length !== 1)
                             models.hub.create({ mac: macAddress, is_reg: 0 });
 
                         //시스템 정보 redis로
@@ -110,7 +110,7 @@ const hubSetup = () => {
                 }
 
                 //허브가 등록이 된 경우
-                else if (!isHubFirstStartup && isHubRegist) {
+                else if (!(hubInfo.length !== 1) && hubInfo[0].is_reg === 1) {
 
                     client.externalIp((err,external_ip) => {
 
