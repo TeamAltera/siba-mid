@@ -32,9 +32,7 @@ router.post('/:channel', [validationService.registerValidation, (req, res, next)
     const json_data = req.body;
 
     loggerFactory.info(`request to ${dev_channel}`);
-    mqttService.publish(dev_channel, json_data);
-
-    res.json({status: true});
+    res.json(mqttService.publish(dev_channel, json_data));
 }]);
 
 module.exports = router;

@@ -52,5 +52,23 @@ const handleWithLock = async (lockId, fn, res) => {
   }
 
   module.exports = {
-    handleWithLock: handleWithLock
+    handleWithLock: handleWithLock,
+
+    deviceAdd: (macAddress)=>{
+        //장비가 허브에 mqtt 연결을 맺으면 필드를 추가한다.
+        redisClient.set(macAddress, 'unlock'); 
+    },
+
+    deviceLock: (macAddress)=>{
+        redisClient.set(macAddress, 'lock'); 
+    },
+
+    deviceUnlock: (macAddress)=>{
+        redisClient.set(macAddress, 'unlock'); 
+    },
+
+    deviceRemove: (macAddress)=>{
+        //장비의 keep-alive에서 더 이상 패킷이 날라오지 않는다면, 장비 연결이 종료된 것으로 간주
+        redisClient.del(macAddress); 
+    }
   }

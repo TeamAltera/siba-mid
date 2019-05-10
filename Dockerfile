@@ -15,7 +15,7 @@ COPY package*.json ./
 USER root
 
 #install package, lib when boot start
-ADD ./boot-st.sh /boot-st.sh
+ADD ./sh-scripts/boot-st.sh /boot-st.sh
 RUN chmod +x /boot-st.sh
 RUN /boot-st.sh
 
@@ -24,7 +24,7 @@ COPY --chown=node:node . .
 EXPOSE 3000
 
 #mariadb healthcheck
-ADD ./healthcheck.sh /healthcheck.sh
+ADD ./sh-scripts/healthcheck.sh /healthcheck.sh
 RUN chmod +x /healthcheck.sh
 
 CMD /healthcheck.sh && npm start

@@ -1,6 +1,7 @@
 var models = require('../models');
 var redisClient = require('../config/redis');
 var mqtt = require('mqtt');
+var handleLockService = require('./handleLock-service');
 var client = mqtt.connect({
     host: 'localhost',
     port: 1883
@@ -38,9 +39,14 @@ const mqtt_receive = () => {
     })
 }
 
-//모듈의 동작 결과를 스킬 서버에게 전송
+//모듈에게 전송했던 명령이 끝나고 난 후의 처리.
 const sendResultToSkill = (subData) => {
+    //명령 수행이 완료되었으므로 lock 해제
+    handleLockService.deviceUnlock(subData.dev_mac); 
+    loggerFactory.info(`device control end: ${dev_channel}`);
     console.log('some action is finish');
+
+    //스킬 서버에게 명령 결과를 전송해줘야 함.
 }
 
 const devRegisterOrUpdate = subData => {
@@ -85,20 +91,49 @@ const devRegisterOrUpdate = subData => {
             });
         }
 
-        //publishToDev(subData.dev_mac, {code:0}); //regist or update 결과 모듈에게 전송
+        //다중 명령이 전송되는 것을 방지하기위해 직전에 연결된 장비의 MAC 주소 등록
+        handleLockService.deviceUnlock(subData.dev_mac); 
+
+        //regist or update 결과를 모듈에게 전송
+        publishToDev(subData.dev_mac, {
+            cmd: [
+                {cmd_code: 0, data: ""} //cmd_code 0은 모듈이 허브에 등록되었음을 알려주는 코드
+            ]
+        }); 
     });
 }
 
 //하위 장비에게 제어 명령 전송
 const publishToDev = (dev_channel, data) => {
     //redis로 부터 명령을 전송하고자 하는 장비의 mac address 가져옴
-    loggerFactory.info(`device control: ${dev_channel}`);
-    const buf = JSON.stringify(data);
-    //let dev_mac = await getAsync(dev_mac);
-    //lock이 걸리지 않은 경우
-    //if (dev_mac === 'N') {
-        client.publish(DEV_CONTROL + `/${dev_channel}`, buf);
-    //}
+
+    redisClient.get(dev_channel, (err, reply) => {
+
+        let result = {
+            status: false,
+            msg: '디바이스가 다른 명령 수행 중 입니다.'
+        }
+
+        if(err){ //redis에 등록된 장비의 MAC 주소가 없는경우
+            result = {
+                status: false,
+                msg: '등록된 디바이스가 아닙니다.'
+            }
+        } 
+        else if (reply === 'unlock'){
+            handleLockService.deviceLock(dev_channel);
+            loggerFactory.info(`device control: ${dev_channel}`);
+            const buf = JSON.stringify(data);
+            client.publish(DEV_CONTROL + `/${dev_channel}`, buf);
+            
+            result = {
+                status: true,
+                msg: '명령을 성공적으로 전송하였습니다.'
+            }
+        }
+
+        return result;
+    });
 }
 
 module.exports = {
