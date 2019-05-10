@@ -52,5 +52,18 @@ const handleWithLock = async (lockId, fn, res) => {
   }
 
   module.exports = {
-    handleWithLock: handleWithLock
+    handleWithLock: handleWithLock,
+
+    deviceLock: (macAddress)=>{
+        redisClient.set(macAddress, 'lock'); 
+    },
+
+    deviceUnlock: (macAddress)=>{
+        redisClient.set(macAddress, 'unlock'); 
+    },
+
+    deviceRemove: (macAddress)=>{
+        //장비의 keep-alive에서 더 이상 패킷이 날라오지 않는다면, 장비 연결이 종료된 것으로 간주
+        redisClient.del(macAddress); 
+    }
   }

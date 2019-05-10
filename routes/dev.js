@@ -5,6 +5,7 @@ var redisClient = require('../config/redis');
 var models = require('../models');
 var validationService = require('../services/validation-service')
 var handleLockService = require('../services/handleLock-service')
+var mqttService = require('../services/mqtt-service')
 
 //허브 하위에 연결된 장비 목록 조회
 router.get('/', [validationService.registerValidation,(req, res, next) => {
@@ -24,8 +25,14 @@ router.get('/', [validationService.registerValidation,(req, res, next) => {
 }]);
 
 //허브 하위 디바이스로 명령
-router.post('/:devmac', [validationService.registerValidation, (req, res, next) => {
-    handleLockService.handleWithLock(req.params.devmac, apService.enable, res);
+router.post('/:channel', [validationService.registerValidation, (req, res, next) => {
+    //handleLockService.handleWithLock(req.params.devmac, apService.enable, res);
+
+    let dev_channel = req.params.channel;
+    const json_data = req.body;
+
+    loggerFactory.info(`request to ${dev_channel}`);
+    mqttService.publish(dev_channel, json_data, false, res);
 }]);
 
 module.exports = router;
