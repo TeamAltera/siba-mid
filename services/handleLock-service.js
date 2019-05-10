@@ -54,11 +54,6 @@ const handleWithLock = async (lockId, fn, res) => {
   module.exports = {
     handleWithLock: handleWithLock,
 
-    deviceAdd: (macAddress)=>{
-        //장비가 허브에 mqtt 연결을 맺으면 필드를 추가한다.
-        redisClient.set(macAddress, 'unlock'); 
-    },
-
     deviceLock: (macAddress)=>{
         redisClient.set(macAddress, 'lock'); 
     },

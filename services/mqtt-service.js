@@ -1,5 +1,7 @@
 var models = require('../models');
 var redisClient = require('../config/redis');
+const {promisify} = require('util');
+const getAsync = promisify(redisClient.get).bind(redisClient);
 var mqtt = require('mqtt');
 var handleLockService = require('./handleLock-service');
 var client = mqtt.connect({
@@ -41,12 +43,12 @@ const mqtt_receive = () => {
 
 //모듈에게 전송했던 명령이 끝나고 난 후의 처리.
 const sendResultToSkill = (subData) => {
+    //스킬 서버에게 명령 결과를 전송해줘야 함.
+
     //명령 수행이 완료되었으므로 lock 해제
     handleLockService.deviceUnlock(subData.dev_mac); 
-    loggerFactory.info(`device control end: ${dev_channel}`);
+    loggerFactory.info(`device receive: ${subData.dev_mac}`);
     console.log('some action is finish');
-
-    //스킬 서버에게 명령 결과를 전송해줘야 함.
 }
 
 const devRegisterOrUpdate = subData => {
@@ -99,41 +101,42 @@ const devRegisterOrUpdate = subData => {
             cmd: [
                 {cmd_code: 0, data: ""} //cmd_code 0은 모듈이 허브에 등록되었음을 알려주는 코드
             ]
-        }); 
+        }, true); 
     });
 }
 
 //하위 장비에게 제어 명령 전송
-const publishToDev = (dev_channel, data) => {
+const publishToDev = async (dev_channel, data, init = false, res = null) => {
     //redis로 부터 명령을 전송하고자 하는 장비의 mac address 가져옴
 
-    redisClient.get(dev_channel, (err, reply) => {
+    let result = {
+        status: false,
+        msg: '디바이스가 다른 명령 수행 중 입니다.'
+    }
 
-        let result = {
+    let reply = await getAsync(dev_channel);
+
+    if(!reply){ //redis에 등록된 장비의 MAC 주소가 없는경우
+        result = {
             status: false,
-            msg: '디바이스가 다른 명령 수행 중 입니다.'
+            msg: '등록된 디바이스가 아닙니다.'
         }
-
-        if(err){ //redis에 등록된 장비의 MAC 주소가 없는경우
-            result = {
-                status: false,
-                msg: '등록된 디바이스가 아닙니다.'
-            }
-        } 
-        else if (reply === 'unlock'){
+    } 
+    else if (reply === 'unlock'){
+        if(!init) //초기화 작업이 아닌 경우는 lock 설정
             handleLockService.deviceLock(dev_channel);
-            loggerFactory.info(`device control: ${dev_channel}`);
-            const buf = JSON.stringify(data);
-            client.publish(DEV_CONTROL + `/${dev_channel}`, buf);
-            
-            result = {
-                status: true,
-                msg: '명령을 성공적으로 전송하였습니다.'
-            }
+        loggerFactory.info(`device publish: ${dev_channel}`);
+        const buf = JSON.stringify(data);
+        client.publish(DEV_CONTROL + `/${dev_channel}`, buf);
+        
+        result = {
+            status: true,
+            msg: '명령을 성공적으로 전송하였습니다.'
         }
+    }
 
-        return result;
-    });
+    if(res)
+        res.json(result);
 }
 
 module.exports = {
