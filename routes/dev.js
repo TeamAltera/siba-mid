@@ -25,14 +25,40 @@ router.get('/', [validationService.registerValidation,(req, res, next) => {
 }]);
 
 //허브 하위 디바이스로 명령
-router.post('/:channel', [validationService.registerValidation, (req, res, next) => {
-    //handleLockService.handleWithLock(req.params.devmac, apService.enable, res);
+router.post('/:channel', (req, res, next) => {
 
-    let dev_channel = req.params.channel;
+    const dev_channel = req.params.channel;
+
+    const requester_id = req.requester_id;
+
     const json_data = req.body;
 
-    loggerFactory.info(`request to ${dev_channel}`);
-    mqttService.publish(dev_channel, json_data, false, res);
-}]);
+    console.log(json_data)
+
+    models.dev.findAll({ 
+        attributes: ['dev_mac', 'dev_type'] 
+    },{
+        where: {
+            dev_mac: dev_channel
+        }
+    }).then(devInfo => {
+
+        if(devInfo.length!==0){
+            //test id 정보 저장
+            redisClient.set(dev_channel, JSON.stringify({
+                requester_id: requester_id,
+                devType: devInfo[0].dev_type,
+            }));
+
+            mqttService.publish(dev_channel, json_data.cmdList, res);
+        }
+        else{
+            res.json({
+                status: false,
+                devInfo: null
+            })
+        }
+    });
+});
 
 module.exports = router;

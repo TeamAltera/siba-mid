@@ -2,7 +2,6 @@ var hostapd = require('wireless-tools/hostapd');
 var udhcpd = require('wireless-tools/udhcpd');
 var ifconfig = require('wireless-tools/ifconfig');
 var async = require('async');
-var ledServices = require('../services/led-services');
 
 const udhcpd_options = {
     interface: 'wlan0',
@@ -15,21 +14,14 @@ const udhcpd_options = {
     }
 };
 
-const hostapd_options = {
+let hostapd_options = {
     channel: 6,
     driver: 'nl80211',
     hw_mode: 'g',
     interface: 'wlan0',
-    ssid: 'IoT-Hub', //ssid는 owner id
+    ssid: '', //ssid는 owner id
     wpa: 2,
-    wpa_passphrase: 'raspberry', //비밀번호
-    //ieee80211n: 1, //enable 802.11n
-    //wmm_enabled: 1, //enable wmm
-    //macaddr_acl: 0, //accept all MAC address
-    //auth_algs: 1, //Use WPA authentication
-    //ignore_broadcast_ssid=0, //require clients to know the network name  
-    //wpa_key_mgmt: 'WPA-PSK', //Use a pre-shared key
-    //rsn_pairwise: 'CCMP' //Use AES, instead of TKIP
+    wpa_passphrase: '', //비밀번호
 };
 
 const ifconfig_options = {
@@ -41,11 +33,6 @@ const ifconfig_options = {
 }
 
 var disable_tasks = [
-    /*(callback)=>{
-        ifconfig.down(ifconfig_options.interface,(err)=>{
-            callback(null, err);
-        });
-    },*/
     (callback) => {
         hostapd.disable(hostapd_options.interface, (err) => {
             callback(null, err);
@@ -76,20 +63,22 @@ var enable_tasks = [
     },
     (callback) => {
         udhcpd.enable(udhcpd_options, (err) => {
-            callback(null, err);// udhcpd enable error problem occured often
+            callback(null, err);
         });
     },
 ]
 
-var apError = false;
-
 module.exports = {
+
+    init: (ssid, password)=>{
+        hostapd_options.ssid = ssid;
+        hostapd_options.wpa_passphrase = password;
+        console.log(hostapd_options)
+    },
 
     disable: () => {
         return new Promise((resolve, reject) => {
             async.series(disable_tasks, (err, results) => {
-                err ? ledServices.error() : ledServices.process();
-                console.log(results);
                 resolve(true);
             })
         });
@@ -98,18 +87,13 @@ module.exports = {
     enable: () => {
         return new Promise((resolve, reject)=>{setTimeout(() => {
             async.series(enable_tasks, (err, results) => {
-                if (!apError) {
-                    apError = err;
-                    apError ? ledServices.error() : ledServices.enable();
-                }
-                console.log(results);
+                console.log(results)
                 resolve(true);
             });
         }, 3000)});//ap모드 기동
-
     },
 
     exportHostapdSettings: () => {
         return hostapd_options;
-    }
+    },
 }

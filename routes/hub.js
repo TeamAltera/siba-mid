@@ -1,13 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var network = require('network')
-var nrf24Service = require('../services/nrf24-services');
 var upnpService = require('../services/upnp-services');
-var ledService = require('../services/led-services');
+var reservationService = require('../services/reservation-service');
 var redisClient = require('../config/redis');
 var models = require('../models');
-var mqttService = require('../services/mqtt-service');
-var apService = require('../services/ap-services');
+var getMac = require('getmac');
 
 //허브 기본 정보 조회 (NAT ip, mac address, etc...)
 router.get('/', (req, res, next) => {
@@ -39,17 +37,24 @@ router.get('/', (req, res, next) => {
                 }
 
                 models.hub.findAll().then(hubInfo => {
+                    getMac.getMac('eth0', (err, macAddress) => {
 
-                    const upnp_options = upnpService.getUpnpOptions();
+                        if (err) {
+                            loggerFactory.error('cannot search MAC address');
+                            throw err;
+                        }
 
-                    //허브 기본 정보 react측으로 응답
-                    res.json({
-                        status: true,
-                        external_ip: ip,
-                        mac_addr: hubInfo[0].mac,
-                        external_port: upnp_options.out,
-                        before_ip: null,
-                    })
+                        const upnp_options = upnpService.getUpnpOptions();
+
+                        //허브 기본 정보 react측으로 응답
+                        res.json({
+                            status: true,
+                            external_ip: ip,
+                            mac_addr: macAddress,
+                            external_port: upnp_options.out,
+                            before_ip: null,
+                        })
+                    });
                 });
             })
         }
@@ -67,7 +72,7 @@ router.post('/', (req, res, next) => {
             if (err) {
                 loggerFactory.error('redis client get error');
             }
-            else if(reply === 'Y')
+            else if (reply === 'Y')
                 loggerFactory.error('hub already regist');
             res.json({
                 status: false
@@ -94,42 +99,69 @@ router.post('/', (req, res, next) => {
                         throw err;
                     }
 
-                    //등록여부는 Yes로
-                    redisClient.set('isreg', 'Y');
-
-                    //hub table정보 업데이트
-                    models.hub.update({
-                        is_reg: 1,
-                        reg_date: new Date().getTime(),
-                        upnp_port: upnp_options.out,
-                        cur_ip: external_ip,
-                    }, {
-                            where: {
-                                mac: macAddress
-                            }
-                        });
-
-                    //등록 성공 후 필요한 작업들 수행
-                    mqttService.init();
-                    apService.disable().then(() => {
-                        apService.enable(); //ap 기동
+                    models.hub.create({
+                        hub_mac: macAddress,
+                        reg_state: 1
                     })
 
-                    ledService.enable();
                     res.json({
-                        status: true
+                        status: true,
                     })
                 });
             });
         }
     });
-
 });
 
-router.get('/rf', function (req, res, next) {
-    //명령이 수행 중에는 lock을 걸어야
-    nrf24Service.broadcast();
-    res.json({ status: 'ok' });
-});
+router.get('/:channel/reservation', (req, res, next) => {
+    const dev_channel = req.params.channel;
+
+    models.reserve.findAll({
+        attributes: ['res_id', 'ev_code', 'act_at'],
+
+    }, {
+            where: {
+                mac: dev_channel
+            }
+        }).then(set => {
+            res.json({
+                reserveList: set.map((item)=>{
+                    return {
+                        reservationId: item.res_id,
+                        eventCode: item.ev_code,
+                        actionAt: item.act_at
+                    }
+                }),
+            })
+        })
+})
+
+router.post('/reservation/:res_id', (req, res, next) => {
+    //const dev_channel = req.params.channel;
+    const res_id = req.params.res_id;
+
+    //예약 취소 수행
+    models.reserve.findAll({
+        attributes: ['res_id'],
+    }, {
+            where: {
+                res_id: res_id
+            }
+        }).then(set => {
+            if (set.length !== 0) {
+                reservationService.reserveCancel(res_id)
+                res.json({
+                    status: 200,
+                    msg: '예약 명령 삭제가 성공적으로 수행되었습니다.'
+                })
+            }
+            else {
+                res.json({
+                    status: 200,
+                    msg: '삭제하고자 하는 예약 명령이 존재하지 않습니다.'
+                })
+            }
+        })
+})
 
 module.exports = router;
