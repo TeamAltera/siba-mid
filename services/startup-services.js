@@ -1,6 +1,7 @@
 var internetAvailable = require('internet-available');
 var upnpService = require('./upnp-services');
 var apService = require('./ap-services');
+var bluetoothService = require('./bluetooth-service');
 var mqttService = require('./mqtt-service');
 var amqpService = require('./amqp-service');
 var models = require('../models');
@@ -39,7 +40,8 @@ const defaultBootSetting = async () => {
                 });
             }
             else{
-                loggerFactory.info('hub registration is not yet');
+                //loggerFactory.info('hub registration is not yet');
+                //console.log('hub registration is not yet')
                 resolve(false)
             }
         })
@@ -67,6 +69,10 @@ module.exports = {
                 if(await upnpService.init()){
                     loggerFactory.info('UPNP setting is finished');
                 }
+
+                // bluetooth
+                //-----------------------------------
+                bluetoothService.init();
 
                 const regCheckInterval = setInterval(async () => {
                     if(await defaultBootSetting()){
@@ -99,7 +105,8 @@ module.exports = {
                 }, 4000)
 
             })
-            .catch(()=>{
+            .catch((e)=>{
+                console.log(e)
                 loggerFactory.info('no internet available');
             })
         }, 5000)

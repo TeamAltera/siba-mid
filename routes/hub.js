@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var network = require('network')
 var upnpService = require('../services/upnp-services');
+var bluetoothService = require('../services/bluetooth-service');
 var reservationService = require('../services/reservation-service');
 var redisClient = require('../config/redis');
 var models = require('../models');
@@ -162,6 +163,18 @@ router.post('/reservation/:res_id', (req, res, next) => {
                 })
             }
         })
+})
+
+router.get('/scan', (req, res, next) => {
+
+    bluetoothService.globalScan(res);
+})
+
+router.post('/connect/:address', (req, res, next) => {
+
+    const address = req.params.address;
+
+    bluetoothService.connectAndInject(address, res);
 })
 
 module.exports = router;
