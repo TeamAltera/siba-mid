@@ -17,6 +17,13 @@ services:
     privileged: true
     volumes:
       - ./siba-hub-config.yml://home/node/app/services/siba-hub-config.yml
+      - /var/lib/bluetooth:/var/lib/bluetooth
+      - /sys/class/bluetooth:/sys/class/bluetooth
+      - /var/run/dbus:/var/run/dbus
+      - /dev/bus/usb:/dev/bus/usb
+
+    #environment:
+    #  - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
   db:
     image: jsurf/rpi-mariadb

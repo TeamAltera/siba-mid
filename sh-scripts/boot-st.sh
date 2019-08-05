@@ -1,6 +1,6 @@
 #!/bin/sh
 
-apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git mysql-client bluetooth bluez libbluetooth-dev libudev-dev expect build-essential
+apt-get update -y && apt-get install -y hostapd dnsmasq udhcpd net-tools sudo git mysql-client bluetooth bluez bluez-tools libbluetooth-dev libudev-dev expect build-essential dbus
 
 npm install amqplib
 npm install shelljs

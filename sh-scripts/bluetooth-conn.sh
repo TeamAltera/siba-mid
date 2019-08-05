@@ -4,26 +4,43 @@ set prompt "#"
 set address [lindex $argv 0]
 
 spawn bluetoothctl
-expect -re $prompt
-send "remove $address\r"
+expect $prompt
+
+send "power on\r"
 sleep 1
-expect -re $prompt
+send "discoverable on\r"
+sleep 1
+
+send "remove $address\r"
+expect $prompt
 send "agent on\r"
-sleep 2
+expect "Agent registered"
 send "default-agent\r"
-sleep 2
+expect "Agent registered"
 send "scan on\r"
-send_user "\nscanning...\r"
-sleep 10
-send_user "\ndone scanning...\r"
-send "scan off\r"
-expect "Controller"
-send "trust $address\r"
-sleep 2
-send "pair $address\r"
-sleep 2
-send "1234\r"
-send_user "\nShould be paired now.\r"
-sleep 2
+expect {
+    "Device $address" 
+    {
+        send "scan off\r"
+        expect "Discovery stopped"
+        send "pair $address\r"
+        expect {
+            "Enter PIN code"
+            {
+                send "1234\r"
+                expect "Pairing successful"
+                send "trust $address\r"
+                expect "trust succeeded"
+                send "quit\r"
+                #puts "\rPAIR-SUCCESS\r"
+                exit 0
+            }
+        }
+        send "quit\r"
+        #puts "\rERR-PIN-TIMEOUT\r"
+        exit 1
+    }
+}
 send "quit\r"
-expect eof
+#puts "\rERR-DEVICE-NOT-FOUND\r"
+exit 1

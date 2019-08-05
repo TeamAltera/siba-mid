@@ -27,4 +27,8 @@ done
 
 sequelize-auto -o "./models" -d hub_system -h 127.0.0.1 -u user -p 3306 -x user -e mariadb
 
+#bluetoothd -dn
+
+#bluetoothctl
+
 exec $cmd

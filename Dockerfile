@@ -28,5 +28,6 @@ ADD ./sh-scripts/healthcheck.sh /healthcheck.sh
 RUN chmod +x /healthcheck.sh
 
 RUN chmod +x ./sh-scripts/bluetooth-conn.sh
+RUN chmod +x ./sh-scripts/bluetooth-scan.sh
 
 CMD /healthcheck.sh && npm start

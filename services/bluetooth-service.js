@@ -18,19 +18,32 @@ module.exports = {
                 name: name
             })
         })
+        btSerial.on('finished', (address, name) => {
+
+        })
+        btSerial.on('closed', () => {
+            /*shell.exec(`expect ./sh-scripts/bluetooth-disconn.sh`, (code, stdout, stderr) => {
+                loggerFactory.info('bluetooth connection closed');
+            })*/
+        })
     },
 
     globalScan: (res) => {
         if (!bleScan) {
             bleScan = true;
             bleDevices = [];
+
             btSerial.inquireSync();
+            //shell.exec(`expect ./sh-scripts/bluetooth-scan.sh`, (code, stdout, stderr) => {
+
+
             bleScan = false;
             res.json({
                 status: 200,
                 devices: bleDevices,
                 msg: '디바이스 스캔이 완료되었습니다.'
             })
+            //})
         }
         else {
             res.json({
@@ -56,39 +69,41 @@ module.exports = {
 
             shell.exec(`expect ./sh-scripts/bluetooth-conn.sh ${address}`, (code, stdout, stderr) => {
 
-                console.log('code:' + code)
-                console.log(stdout)
-                console.log(stderr)
+                if (code === 0) {
+                    btSerial.connect(address, 1, () => {
 
+                        loggerFactory.info('connect with hc-06 is success');
 
-                btSerial.connect(address, 1, () => {
+                        btSerial.write(new Buffer(JSON.stringify({
+                            ssid: ssid,
+                            pwd: wpa_passphrase
+                        }), 'utf-8'), (err, bytesWritten) => {
+                            loggerFactory.info('ssid, password inject to device');
 
-                    loggerFactory.info('connect with hc-06 is success');
+                            // close the connection when you're ready
+                            btSerial.close();
 
-                    btSerial.write(new Buffer(JSON.stringify({
-                        ssid: ssid,
-                        pwd: wpa_passphrase
-                    }), 'utf-8'), (err, bytesWritten) => {
-                        loggerFactory.info('ssid, password inject to device');
-                        if (err) {
-                            loggerFactory.console.error(`error is occured: ${err}`);
-                            res.json(result)
-                        }
-                        else {
-
-                            res.json({
-                                status: 200,
-                                msg: '디바이스 연결이 성공하였습니다.'
-                            })
-                        }
-
-                        // close the connection when you're ready
-                        btSerial.close();
+                            if (err) {
+                                loggerFactory.console.error(`error is occured: ${err}`);
+                                res.json(result)
+                            }
+                            else {
+                                res.json({
+                                    status: 200,
+                                    msg: '디바이스 연결이 성공하였습니다.'
+                                })
+                            }
+                        });
+                    }, (e) => {
+                        console.log(e)
+                        loggerFactory.info('cannot connect hc-06 module');
+                        res.json(result)
                     });
-                }, () => {
-                    loggerFactory.info('cannot connect hc-06 module');
+                }
+                else {
+                    loggerFactory.info('shell execute is failed');
                     res.json(result)
-                });
+                }
             })
         }
         else {
