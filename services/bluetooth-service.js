@@ -13,10 +13,12 @@ module.exports = {
     init: () => {
         loggerFactory.info('bluetooth module init');
         btSerial.on('found', (address, name) => {
-            bleDevices.push({
-                address: address,
-                name: name
-            })
+            if (name.indexOf('$siba_') !== -1) {
+                bleDevices.push({
+                    address: address,
+                    name: name.split('_', 2)[1]
+                })
+            }
         })
         btSerial.on('finished', (address, name) => {
 
@@ -56,6 +58,8 @@ module.exports = {
 
     connectAndInject: (address, res) => {
 
+        res.status(500);
+
         let result = {
             status: 500,
             msg: '디바이스 연결이 실패하였습니다.'
@@ -80,14 +84,12 @@ module.exports = {
                         }), 'utf-8'), (err, bytesWritten) => {
                             loggerFactory.info('ssid, password inject to device');
 
-                            // close the connection when you're ready
-                            btSerial.close();
-
                             if (err) {
                                 loggerFactory.console.error(`error is occured: ${err}`);
                                 res.json(result)
                             }
                             else {
+                                res.status(200);
                                 res.json({
                                     status: 200,
                                     msg: '디바이스 연결이 성공하였습니다.'

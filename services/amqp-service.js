@@ -84,5 +84,18 @@ module.exports = {
                 )
             });
         })
-    }
+    },
+
+    deviceRegister: (data) => {
+        amqp.connect(AMQP_URL, (err,conn)=>{
+            conn.createChannel((err,ch)=>{
+                ch.publish(
+                    DEVICE_ESTABLISH_TOPIC, 
+                    DEVICE_ESTABLISH_ROUTE, 
+                    Buffer.from(JSON.stringify(data)), 
+                    {contentType: 'application/json'}
+                )
+            });
+        })
+    },
 }

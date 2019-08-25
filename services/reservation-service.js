@@ -1,4 +1,5 @@
 var models = require('../models');
+var redisClient = require('../config/redis');
 
 const timerList = []
 
@@ -25,11 +26,12 @@ const reservationActor = (devMac, item, idxLoc, res_id, res_type, func) => {
             models.reserve.destroy({ where: { res_id: res_id } })
                 .then(result => {
                     func(devMac, {
-                        cmdList:
+                        c:
                             [
                                 {
-                                    eventCode: item.eventCode,
-                                    dataset: idxLoc.dynamic ? [item.additional[idxLoc.dynamic]] : [],
+                                    e: item.eventCode,
+                                    t: 5, //예약 명령
+                                    d: idxLoc.dynamic ? [item.additional[idxLoc.dynamic]] : [],
                                 }
                             ]
                     })
@@ -146,7 +148,7 @@ module.exports = {
         })
     },
 
-    reserveCancel: (reserveId) => {
+    reserveCancel: (reserveId, mac) => {
 
         //예약 정보 삭제
         models.reserve.destroy({ where: { res_id: reserveId } })
@@ -162,6 +164,8 @@ module.exports = {
                         if (instance) {
                             clearTimeout(instance)
                             timerList.splice(idx, 1)
+
+                            redisClient.del(mac) //데이터 제거
                         }
                     }
                 }
