@@ -51,6 +51,8 @@ const defaultBootSetting = async () => {
 module.exports = {
     start: async () => {
 
+        redisClient.set('isreg', 'N');
+
         // 1 step. internet status check
         const connectionObj = setInterval(() => {
             
@@ -89,17 +91,21 @@ module.exports = {
                             //-----------------------------------
                             apService.init('IoT-hub','raspberry');
                             apService.disable().then(()=>{
-                                apService.enable()
+                                apService.enable().then(async (res)=>{
+                                    if(res){
+                                        redisClient.set('isreg', 'Y');
+
+                                        // MQTT
+                                        //-----------------------------------
+                                        mqttService.init();
+
+                                        //establish, keep-alive 설정
+                                        const upnpConfiguration = upnpService.getUpnpOptions();
+                                        const mac = await getAsync('mac');
+                                        amqpService.init(mac, external_ip, upnpConfiguration.out);
+                                    }
+                                })
                             })
-    
-                            // MQTT
-                            //-----------------------------------
-                            mqttService.init();
-    
-                            //establish, keep-alive 설정
-                            const upnpConfiguration = upnpService.getUpnpOptions();
-                            const mac = await getAsync('mac');
-                            amqpService.init(mac, external_ip, upnpConfiguration.out);
                         })
                     }
                 }, 4000)

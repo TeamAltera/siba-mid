@@ -59,7 +59,7 @@ const mqttTopcicSubscription = () => {
 }
 
 const mqttReceiveDefine = () => {
-    client.on('message', (topic, message) => {
+    client.on('message', async (topic, message) => {
         if (topic === SYSTEM_BROKER_CLIENT_INACTIVE) {
             console.log(topic)
             const msg = message.toString().split(',')
@@ -67,14 +67,15 @@ const mqttReceiveDefine = () => {
             return;
         }
 
-        let subData = JSON.parse(message.toString());
-        console.log(topic)
-        console.log(subData)
+        const subData = JSON.parse(message.toString());
+        //console.log(topic)
+        //console.log(subData)
 
         switch (topic) {
             //하위 장비가 연결되고 등록 정보를 전송했을 때,
             case DEV_REGISTER:
-                devRegisterOrUpdate(subData);
+                if(await getAsync('isreg')==='Y')
+                    devRegisterOrUpdate(subData);
                 break;
             case DEV_CONTROL_END:
                 sendResultToSkill(subData);
@@ -157,7 +158,7 @@ const devRegisterOrUpdate = (subData) => {
         //상태 모델 DB 생성
         requestService.request(subData.dev_type).then((item) => {
 
-            modelService.createDataModelTable(item.data.model, subData.dev_mac).then(async (res) => {
+            modelService.createDataModelTable(item.data.model, subData.dev_mac, item.data.events).then(async (res) => {
 
                 //서버에 연결 정보 전송
                 /*amqpService.deviceRegister({
