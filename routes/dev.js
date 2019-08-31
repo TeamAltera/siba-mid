@@ -92,4 +92,46 @@ router.post('/:channel/state', async (req, res, next) => {
     })
 })
 
+//judgement 수행
+router.post('/:channel/judge', (req, res, next) => {
+
+    const dev_channel = req.params.channel;
+
+    const statement = req.body.statement;
+
+    let result = 500
+
+    console.log(statement);
+
+    try{
+        const trimStatement = statement.trim();
+
+    
+        const match = trimStatement.match('#{[a-zA-Z]+}')
+        let key = null; 
+        if(match)
+            key = match[0].replace('#{', '').replace('}','')
+            
+        modelService.getDataModel(key, dev_channel).then(data=>{
+            const execStatement = trimStatement.replace('#{'+key+'}',data)
+            const evalRes = eval(execStatement)
+            //console.log(execStatement)
+            //console.log(evalRes)
+            result =  evalRes ? 200 : 500
+
+            console.log(result);
+
+            res.json({
+                status: result
+            })
+        })
+    }
+    catch(e){
+        res.json({
+            status: 500
+        })
+    }
+
+});
+
 module.exports = router;

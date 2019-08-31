@@ -353,6 +353,8 @@ module.exports = {
     //MQTT 초기화
     init: () => {
 
+        modelService.init(publishToEvent)
+
         //topic subscribe 설정
         mqttTopcicSubscription();
 
