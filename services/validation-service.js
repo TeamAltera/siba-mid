@@ -12,9 +12,9 @@ const isRegister = async (res, next) => {
         next();
     }
     else {
-        res.status(200).json({
+        res.json({
             status: false,
-            error: 'please hub registration first'
+            error: '허브 등록이 되어 있지 않습니다. 허브 등록을 먼저해주세요.'
         });
     }
 }

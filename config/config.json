@@ -5,6 +5,7 @@
     "database": "hub_system",
     "host": "127.0.0.1",
     "dialect": "mariadb",
+    "logging": false,
     "pool": {
       "max": 5,
       "min": 0,
