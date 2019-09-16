@@ -11,6 +11,7 @@ module.exports = {
     init: async () => {
         return new Promise((resolve, reject) => {
             //let result = false;
+	    client.portUnmapping({public:upnp_options.out})
 
             client.getMappings((err, results) => {
                 console.log(results)
