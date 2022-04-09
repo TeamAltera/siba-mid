@@ -21,7 +21,7 @@
     "internet-available": "^1.0.0",
     "ip": "^1.1.5",
     "mariadb": "^2.0.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "morgan": "~1.9.0",
     "mqtt": "^2.18.8",
     "nan": "^2.12.1",
